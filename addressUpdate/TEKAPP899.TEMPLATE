@@ -7,7 +7,7 @@
  be bound by the End User License Agreement (the "EULA") included in these 
  downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
 
- SPECFILENAME : TEKAPP899.TEMPLATE
+ SPECFILENAME : TEKAPP019.TEMPLATE
  VERSION      : 001
  COPYRIGHT    : TekChoice, LLC 2022 © 
 
@@ -16,24 +16,24 @@
  Programmed   : TekChoice LLC
 
  Files        : 1. PowerOn files
-                  a. TEKAPP899.TEMPLATE
-                  b. TEKAPP899.TEMPLATE.CU
-                  c. TEKAPP899.TEMPLATE.DEF
-                  d. TEKAPP899.TEMPLATE.SET
-                  e. TEKAPP899.TEMPLATE.HTM
-                  f. TEKAPP899.TEMPLATE.PRO
-                  g. TEKAPP899.MAIN.DEF
-                  h. TEKAPP899.MAIN.SET
-                  i. TEKAPP899.MAIN.HTM
-                  j. TEKAPP899.MAIN.PRO
+                  a. TEKAPP019.TEMPLATE
+                  b. TEKAPP019.TEMPLATE.CU
+                  c. TEKAPP019.TEMPLATE.DEF
+                  d. TEKAPP019.TEMPLATE.SET
+                  e. TEKAPP019.TEMPLATE.HTM
+                  f. TEKAPP019.TEMPLATE.PRO
+                  g. TEKAPP019.MAIN.DEF
+                  h. TEKAPP019.MAIN.SET
+                  i. TEKAPP019.MAIN.HTM
+                  j. TEKAPP019.MAIN.PRO
 
                 2. Non TekChoice include PowerOn files
                   a. RD.GETDATA.DEF
 
                 3. Letter files read at TekSetGlobalVariables procedure
-                  a. TekMainCSS.899
-                  b. TekMainJS.899
-                  c. TekMainCU.899
+                  a. TekMainCSS.019
+                  b. TekMainJS.019
+                  c. TekMainCU.019
 
  Modified     : 04.22.22 Original Source
 ********************************************************************************]
@@ -44,18 +44,18 @@ TARGET=ACCOUNT
 
 DEFINE
  #INCLUDE "RD.GETDATA.DEF"
- #INCLUDE "TEKAPP899.MAIN.DEF"
- #INCLUDE "TEKAPP899.TEMPLATE.DEF"
+ #INCLUDE "TEKAPP019.MAIN.DEF"
+ #INCLUDE "TEKAPP019.TEMPLATE.DEF"
 END[DEFINE]
 
 SETUP
- #INCLUDE "TEKAPP899.MAIN.SET"
- #INCLUDE "TEKAPP899.TEMPLATE.SET"
+ #INCLUDE "TEKAPP019.MAIN.SET"
+ #INCLUDE "TEKAPP019.TEMPLATE.SET"
 
  WebPageTitle="TEMPLATE"
  TekWebCalendar=FALSE
 
- CurrentApp(CurrentAppName,1)="TEKAPP899.TEMPLATE"
+ CurrentApp(CurrentAppName,1)="TEKAPP019.TEMPLATE"
  CurrentApp(CurrentAppChannel,1)="01 Episys Client"
  CurrentApp(CurrentAppStep,1)="Initial App Call"
 
@@ -129,8 +129,8 @@ PROCEDURE secondProcedure
 END [getConfirmation]
 
 
-#INCLUDE "TEKAPP899.MAIN.PRO"
-#INCLUDE "TEKAPP899.MAIN.HTM"
-#INCLUDE "TEKAPP899.TEMPLATE.PRO"
-#INCLUDE "TEKAPP899.TEMPLATE.HTM"
-#INCLUDE "TEKAPP899.TEMPLATE.CU"
+#INCLUDE "TEKAPP019.MAIN.PRO"
+#INCLUDE "TEKAPP019.MAIN.HTM"
+#INCLUDE "TEKAPP019.TEMPLATE.PRO"
+#INCLUDE "TEKAPP019.TEMPLATE.HTM"
+#INCLUDE "TEKAPP019.TEMPLATE.CU"

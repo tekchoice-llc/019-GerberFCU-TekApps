@@ -7,7 +7,7 @@
  be bound by the End User License Agreement (the "EULA") included in these 
  downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
 
- SPECFILENAME : TEKAPP899.TEMPLATE.CU
+ SPECFILENAME : TEKAPP019.TEMPLATE.CU
  VERSION      : 001
  COPYRIGHT    : TekChoice, LLC 2022 © 
 
@@ -25,9 +25,9 @@ PROCEDURE setCrediUnionVars
  TekStepOverview=TRUE
 
 [ *** CU Files *** ]
- TekMainCSS="TekMainCSS.899" [20220422 KDS]
- TekMainJS="TekMainJS.899" [20220422 KDS]
- TekMainCUVars="TekMainCU.899" [20220422 KDS]
+ TekMainCSS="TekMainCSS.019" [20220422 KDS]
+ TekMainJS="TekMainJS.019" [20220422 KDS]
+ TekMainCUVars="TekMainCU.019" [20220422 KDS]
 
 END[setCrediUnionVars]
 
