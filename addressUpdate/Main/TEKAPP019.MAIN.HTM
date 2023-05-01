@@ -1,0 +1,551 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.MAIN.HTM
+ VERSION: 001
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Sections:      1. Main Html TekApp Procedures
+
+ Programmed:    TekChoice LLC
+
+ Modified:      05-16-2022 Original Source
+
+
+********************************************************************************]
+
+[ **********************************************************************
+                    1. Main Html TekApp Procedures
+
+ *********************************************************************** ]
+
+PROCEDURE TekProDisplayHtmlNameList
+ CALL TekProGetNextNameListPos
+ FOR J=0 TO NameListPos-1
+  DO
+    HTMLVIEWLINE("<option value='"+NameList(J,ObjNameLocator)+"'")
+    IF RequesterObj(ObjNameLocator)=NameList(J,ObjNameLocator) OR RequesterObj(ObjNameLocator)="Other" THEN  HTMLVIEWLINE(" selected")
+    HTMLVIEWLINE(">" +NameList(J,ObjNameLongName)+ "</option>")
+  END
+END[TekProDisplayHtmlNameList]
+
+PROCEDURE TekProWebMainCSS
+ FILEOPEN("LETTER",TekMainCSS,"READ",FNUMBER,FERROR)
+ FILEREADLINE(FNUMBER,FLINE,FERROR)
+ WHILE FERROR=""
+  DO
+   FOR J=0 TO CUColorsMax
+    DO
+     IF CHARACTERSEARCH(FLINE,CUColors(J,0))>0 THEN
+      DO
+       TEMPTEXT=FLINE
+       TEMPTEXT1=CUColors(J,0)
+       TEMPTEXT2=CUColors(J,1)
+       CALL TekProReplace
+       FLINE=TEMPTEXT
+      END
+    END
+    HTMLVIEWLINE(FLINE)
+    FILEREADLINE(FNUMBER,FLINE,FERROR)
+  END
+ FILECLOSE(FNUMBER,FERROR)
+END[TekProWebMainCSS]
+
+PROCEDURE TekProWebMainJS
+ HTMLVIEWLINE("<script type='text/javascript'>")
+ FILEOPEN("LETTER",TekMainJS,"READ",FNUMBER,FERROR)
+ FILEREADLINE(FNUMBER,FLINE,FERROR)
+ WHILE FERROR=""
+  DO
+    HTMLVIEWLINE(FLINE)
+    FILEREADLINE(FNUMBER,FLINE,FERROR)
+  END
+ FILECLOSE(FNUMBER,FERROR)
+ HTMLVIEWLINE("</script>")
+END[TekProWebMainJS]
+
+PROCEDURE TekProWebHeader
+ HTMLVIEWOPEN
+ HTMLVIEWLINE("<!DOCTYPE html PUBLIC "+Q+"-//W3C//DTD XHTML 1.0 Transitional//EN"+Q+" ")
+ HTMLVIEWLINE(Q+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"+Q+" >")
+ HTMLVIEWLINE(" <meta http-equiv='X-UA-Compatible' content='IE=edge' />")
+ HTMLVIEWLINE("<html xmlns=" +Q+ "http://www.w3.org/1999/xhtml" +Q+ " >")
+ HTMLVIEWLINE("<META NAME="+Q+"SYMITAR_GREEN_ARROW"+Q+" VALUE="+Q+"DISABLE_GREEN_ARROW"+Q+">")
+ IF TekWebCalendar = TRUE THEN
+  DO
+   HTMLVIEWLINE("<script src='" +HtmlFilePath+ "jquery_1_12_4.js' type='text/javascript' ></script>")
+   HTMLVIEWLINE("<script src='" +HtmlFilePath+ "jquery_ui_1_12_1.js' type='text/javascript' ></script>")
+   HTMLVIEWLINE("<link rel='stylesheet' href='" +HtmlFilePath+ "jquery_ui_1_12_1.css' />")
+  END
+ CALL TekProWebMainCSS
+ CALL TekProWebMainJS
+ HTMLVIEWLINE("<body onLoad='DoIni()' >")
+ HTMLVIEWLINE("<form name='" + WebFormName + "' id='" + WebFormName + "' METHOD=POST ")
+ HTMLVIEWLINE("ACTION="+Q+"symitar://HTMLView~Action=Post"+ACTIONPOST+Q+">")
+ HTMLVIEWLINE("<input type='hidden' name='MyOption' id='MyOption' value='' >")
+ HTMLVIEWLINE("<input type='hidden' name='HtmlAnchor' id='HtmlAnchor' value='" +HtmlVars(HtmlAnchor,HtmlFieldValue)+ "' >")
+ HTMLVIEWLINE("<input type='hidden' name='HtmlFocus' id='HtmlFocus' value='" +HtmlVars(HtmlFocus,HtmlFieldValue)+ "' >")
+ HTMLVIEWLINE("<input type='hidden' name='HtmlTrackStartTime' id='HtmlTrackStartTime' value='' >")
+ HTMLVIEWLINE("<input type='hidden' name='HtmlTrackEndTime' id='HtmlTrackEndTime' value='' >")
+ CALL TekProWebClearBtn
+END[TekProWebHeader]
+
+PROCEDURE TekProWebHeaderEnd 
+ HTMLVIEWLINE("</form></body></html>")
+ HTMLVIEWDISPLAY
+END[TekProWebHeaderEnd]
+
+PROCEDURE TekProWebAcctOverview
+ HTMLVIEWLINE("<div id=" +Q+ "LeftblockID" +Q+ " class=" +Q+ "Leftblock" +Q+ ">")
+ HTMLVIEWLINE("<div class='blockbar bkg-bar txt-xlarge'>Account Overview</div>")
+ HTMLVIEWLINE("<div style='margin: 20px' >")
+ HTMLVIEWLINE("<div class='txt-xlarge txt-comment'>")
+ HTMLVIEWLINE("<img src='" +HtmlFilePath+ "TekBank.jpg' /><b> "+ACCOUNT:NUMBER+"</b></div>")
+ HTMLVIEWLINE("<div style='txt-medium'>")
+ IF RequesterObj(ObjNameLongName)<>"" AND SEGMENT(RequesterObj(ObjNameType),1,2)<>"00" THEN 
+  DO
+   HTMLVIEWLINE(RequesterObj(ObjNameLongName)+"<br/>")
+   HTMLVIEWLINE(RequesterObj(ObjNameType)+"<br/>")
+  END
+ ELSE
+  DO
+   FOR EACH NAME WITH NAME:TYPE=0
+    DO
+     HTMLVIEWLINE(NAME:LONGNAME+"<br/>")
+     HTMLVIEWLINE("Member Since " +FORMAT("9999",FULLYEAR(ACCOUNT:OPENDATE))+"<br/>")
+    END
+  END
+ HTMLVIEWLINE("</div>")
+ HTMLVIEWLINE("<br/><div class='txt-wide txt-large txt-warning'>")
+ HTMLVIEWLINE("<img src='" +HtmlFilePath+ "TekWarning.jpg' /> <b>WARNINGS</b></div>")
+ HTMLVIEWLINE("<div class='hr-warning' ></div>")
+ HTMLVIEWLINE("<div class='txt-medium'>")
+ TEMPFLAG=FALSE
+ FOR J=1 TO 20
+  DO
+   IF ACCOUNT:WARNINGCODE:(J)>0 AND
+      (ACCOUNT:WARNINGEXPIRATION:(J)>SYSTEMDATE OR ACCOUNT:WARNINGEXPIRATION:(J)='--/--/--') THEN
+     DO
+      TEMPFLAG=TRUE
+      [HTMLVIEWLINE(FORMAT("999",ACCOUNT:WARNINGCODE:(J))+" "+WARNINGDESC(ACCOUNT:WARNINGCODE:(J))+"<br/>")]
+      HTMLVIEWLINE(FORMAT("999",ACCOUNT:WARNINGCODE:(J))+" "+GETDATACHAR(GETPARAMWARNING,J)+"<br/>")
+     END
+  END
+ IF TEMPFLAG=FALSE THEN HTMLVIEWLINE("No Warning(s) Found<br/>")
+ HTMLVIEWLINE("</div>")
+ 
+ [CALL TekProGetCUServices
+ HTMLVIEWLINE("<br/><div class='txt-wide txt-large txt-ok'>")
+ HTMLVIEWLINE("<img src='" +HtmlFilePath+ "TekServices.jpg' /> <b>SERVICES</b></div>")
+ HTMLVIEWLINE("<div class='hr-div bkg-ok' ></div>")
+ HTMLVIEWLINE("<div class='txt-medium'>")
+ TEMPFLAG=FALSE
+ FOR J=1 TO 99
+  DO
+    IF MbrServices(J)<>"" THEN
+     DO
+      POS=CHARACTERSEARCH(MbrServices(J),"|")
+      TEMPTEXT1=SEGMENT(MbrServices(J),1,POS-1)
+      TEMPTEXT2=SEGMENT(MbrServices(J),POS+1,LENGTH(MbrServices(J)))
+      HTMLVIEWLINE("<div style='padding-top:10px' ><img align='middle' style='width:15px;height:15px;' ")
+      IF TEMPTEXT1="0" THEN
+        HTMLVIEWLINE("src='" +HtmlFilePath+ "TekXMark.png' />")
+      ELSE
+       HTMLVIEWLINE("src='" +HtmlFilePath+ "TekCheckMark.png' />")
+      HTMLVIEWLINE(" " +TEMPTEXT2+"</div>")
+      TEMPFLAG=TRUE
+     END
+  END
+ IF TEMPFLAG=FALSE THEN HTMLVIEWLINE("No Service(s) Found<br/>")
+ HTMLVIEWLINE("</div>")]
+ 
+ TekZebraColor=TekBkgColor2
+ HTMLVIEWLINE("<br/><div class='txt-wide txt-large txt-comment'>")
+ HTMLVIEWLINE("<img src='" +HtmlFilePath+ "TekShares.jpg' /> <b>SHARES</b></div>")
+  HTMLVIEWLINE("<div class='hr-comment' ></div>")
+ HTMLVIEWLINE("<div class='txt-medium'>")
+ TEMPFLAG=FALSE 
+ FOR EACH SHARE WITH SHARE:CLOSEDATE='--/--/--'
+  DO
+    TEMPFLAG=TRUE
+    HTMLVIEWLINE("<div style='padding: 5px; background-color:"+TekZebraColor+"' >")
+    HTMLVIEWLINE(SEGMENT(SHARE:ID+" "+SHARE:DESCRIPTION,0,30))
+    TEMPMONEY=SHARE:AVAILABLEBALANCE
+    CALL TekProFormatMoney
+    HTMLVIEWLINE("<br/>"+TEMPTEXT+"</div>")
+    IF TekZebraColor=TekBkgColor2 THEN TekZebraColor=TekBkgColor1
+     ELSE TekZebraColor=TekBkgColor2
+  END
+ IF TEMPFLAG=FALSE THEN HTMLVIEWLINE("No Share(s) Found<br/>")
+ HTMLVIEWLINE("</div>")
+ TekZebraColor=TekBkgColor2
+ HTMLVIEWLINE("<br/><div class='txt-wide txt-large txt-comment'>")
+ HTMLVIEWLINE("<img src='" +HtmlFilePath+ "TekLoans.jpg' /> <b>LOANS</b></div>")
+  HTMLVIEWLINE("<div class='hr-comment' ></div>")
+ HTMLVIEWLINE("<div class='txt-medium'>")
+ TEMPFLAG=FALSE 
+ FOR EACH LOAN WITH LOAN:CLOSEDATE='--/--/--'
+  DO
+    TEMPFLAG=TRUE
+    HTMLVIEWLINE("<div style='padding: 5px; background-color:"+TekZebraColor+"' >")
+    HTMLVIEWLINE(SEGMENT(LOAN:ID+" "+LOAN:DESCRIPTION,0,30))
+    TEMPMONEY=LOAN:BALANCE   
+    CALL TekProFormatMoney
+    HTMLVIEWLINE("<br/>"+TEMPTEXT+"</div>")
+    IF TekZebraColor=TekBkgColor2 THEN TekZebraColor=TekBkgColor1
+     ELSE TekZebraColor=TekBkgColor2
+  END
+ IF TEMPFLAG=FALSE THEN HTMLVIEWLINE("No Loan(s) Found<br/>")
+ HTMLVIEWLINE("</div>")
+ HTMLVIEWLINE("</div></div>")
+END[TekProWebAcctOverview]
+
+PROCEDURE TekProWebAcctOverviewEnd
+ HTMLVIEWLINE("</div></div>")
+END[TekProWebAcctOverviewEnd]
+
+PROCEDURE TekProWebBodyMain
+ HTMLVIEWLINE("<div id=" +Q+ "RightblockID" +Q+ "  class=" +Q+ "Rightblock" +Q+ ">")
+ HTMLVIEWLINE("<div class='blockbar bkg-bar txt-xlarge' style='color:white;' >")
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' ><tr>")
+ HTMLVIEWLINE("<td style='padding:0px;margin:0px;'>"+WebPageTitle)
+ HTMLVIEWLINE("</td><td align='right' style='padding:0px;margin:0px' >")
+ HTMLVIEWLINE("<div class='tooltip' >")
+ HTMLVIEWLINE("<a href='"+TekAppPDFProcedure+"' tabindex='-1' class='btnLetter bkg-bar' target='_blank' >?</a>")
+ HTMLVIEWLINE("<span class='tooltiptext txt-medium'>Open Procedure</span></div>")
+ HTMLVIEWLINE("<div class='tooltip' >")
+ HTMLVIEWLINE("<a href='#' class='btnLetter bkg-bar' tabindex='-1' onclick='SubmitForm(2);return false;' >X</a>")
+ HTMLVIEWLINE("<span class='tooltiptext txt-medium'>Close</span></div>")
+ HTMLVIEWLINE("</td></tr></table>")
+ HTMLVIEWLINE("</div>")
+END[TekProWebBodyMain]
+
+PROCEDURE TekProWebWSteps
+ CALL TekProWebBodyMain
+ HTMLVIEWLINE("<div style='padding: 20px' >")
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' ><tr>")
+ TEMPMONEY=$100.00/NumOfSteps
+ TEMPNUM=INT(TEMPMONEY)/100 
+ FOR J=1 TO NumOfSteps
+  DO
+     IF J=CurrentStep THEN HTMLVIEWLINE("<td class='StepBorderCurrent' style='font-weight:bold;width:"+FORMAT("99",TEMPNUM)+"%' >")
+      ELSE IF J<CurrentStep THEN HTMLVIEWLINE("<td class='StepBorderOn' style='width:"+FORMAT("99",TEMPNUM)+"%' >")
+       ELSE  HTMLVIEWLINE("<td class='StepBorderOff'style='width:"+FORMAT("99",TEMPNUM)+"%' >")
+     HTMLVIEWLINE(StepName(J)+"</td>")
+  END
+ HTMLVIEWLINE("</tr></table>")
+END[TekProWebWStep]
+
+PROCEDURE TekProWebBody
+ CALL TekProWebBodyMain
+ HTMLVIEWLINE("<div style='margin: 5px 20px' >")
+END[TekProWebBody]
+
+PROCEDURE TekProWebBodyEnd
+ HTMLVIEWLINE("</div></div>")
+END[TekProWebBodyEnd]
+
+PROCEDURE TekProWebClearBtn
+ FOR J=0 TO WebMaxBtn 
+  DO
+    WebBtn(J)=""
+  END
+END[TekProWebClearBtn]
+
+PROCEDURE TekProWebDisplayBtn
+ HTMLVIEWLINE("<div class='divider' ></div>")
+ HTMLVIEWLINE("<div class='pos-right' style='padding:0 80px 50px 0;' >")
+ J=1
+ WHILE WebBtn(J)<>"" 
+  DO
+    Pos=CHARACTERSEARCH(WebBtn(J),"~")
+    WebBtnText=SEGMENT(WebBtn(J),1,Pos-1)
+    WebBtnAction=SEGMENT(WebBtn(J),Pos+1,LENGTH(WebBtn(J)))
+    IF HtmlFieldDisabled=TRUE AND WebBtnAction="3" THEN
+     HTMLVIEWLINE("<a href='#' class='btnDisabled txt-large' ")
+    ELSE
+     HTMLVIEWLINE("<a href='#' class='btn txt-large' ")
+    HTMLVIEWLINE("tabindex='-1' onclick='SubmitForm("+WebBtnAction+");return false;' >" +WebBtnText+ "</a>")
+    J=J+1
+  END 
+ HTMLVIEWLINE("</div>")
+ HtmlFieldDisabled=FALSE
+END[TekProWebDisplayBtn]
+
+PROCEDURE TekProWebLoadFields
+ INPUTCOUNT=0
+ WHILE (INPUTFIELDS(INPUTCOUNT)<>"EOD")
+  DO
+   INPUTCOUNT=INPUTCOUNT+1
+   INPUTFIELDS(INPUTCOUNT)=ENTERLINE(0)
+  END
+ HtmlVars(MyOption,HtmlFieldID)="MyOption"
+ HtmlVars(HtmlTrackStartTime,HtmlFieldID)="HtmlTrackStartTime"
+ HtmlVars(HtmlTrackEndTime,HtmlFieldID)="HtmlTrackEndTime"
+ TMPINPUTFIELDS=""
+ REPEATED =0
+ FOR J=1 TO INPUTCOUNT-1
+  DO
+    IF TMPINPUTFIELDS=SEGMENT(INPUTFIELDS(J),1,CHARACTERSEARCH(INPUTFIELDS(J),"=")-1) THEN
+      REPEATED = 1
+    TMPINPUTFIELDS=SEGMENT(INPUTFIELDS(J),1,CHARACTERSEARCH(INPUTFIELDS(J),"=")-1)
+    
+    FOR Jx=0 TO HtmlVarsMax
+     DO 
+        IF HtmlVars(Jx,HtmlFieldID)=TMPINPUTFIELDS THEN
+         DO
+           IF HtmlVars(Jx,HtmlPrecede) = "1" AND REPEATED = 1 THEN
+           DO
+              HtmlVars(Jx,HtmlFieldValue) =  HtmlVars(Jx,HtmlFieldValue)+ 
+                                             SEGMENT(INPUTFIELDS(J),CHARACTERSEARCH(INPUTFIELDS(J),"=")+1,LENGTH(INPUTFIELDS(J)))
+           END
+           ELSE
+           HtmlVars(Jx,HtmlFieldValue)=SEGMENT(INPUTFIELDS(J),CHARACTERSEARCH(INPUTFIELDS(J),"=")+1,LENGTH(INPUTFIELDS(J)))
+           
+           IF HtmlVars(Jx,HtmlFieldValue)=TMPINPUTFIELDS THEN HtmlVars(Jx,HtmlFieldValue)=""
+           Jx=HtmlVarsMax
+           REPEATED = 0
+         END
+     END
+  END
+ IF STARTTIME="" THEN STARTTIME=HtmlVars(HtmlTrackStartTime,HtmlFieldValue)
+ ENDTIME=HtmlVars(HtmlTrackEndTime,HtmlFieldValue)
+ WebSubmitBtn=HtmlVars(MyOption,HtmlFieldValue)
+END[TekProWebLoadFields]
+
+PROCEDURE TekProIniField
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldName)="" THEN HtmlVars(HtmlTxtFieldName,HtmlFieldName)=HtmlVars(HtmlTxtFieldName,HtmlFieldID)
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldLabel)="" THEN HtmlVars(HtmlTxtFieldName,HtmlFieldLabel)=HtmlVars(HtmlTxtFieldName,HtmlFieldID)
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldMaxLength)="" THEN HtmlVars(HtmlTxtFieldName,HtmlFieldMaxLength)=HtmlDefaultFieldMaxLength
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldSize)="" THEN HtmlVars(HtmlTxtFieldName,HtmlFieldSize)=HtmlDefaultFieldSize
+END[TekProInIField]
+
+PROCEDURE TekProCreateTxtField
+ CALL TekProIniField
+ HTMLVIEWLINE(HtmlVars(HtmlTxtFieldName,HtmlFieldLabel)+ "<br/>")
+ HTMLVIEWLINE("<input type='text' class='inputtext' maxlength='"+HtmlVars(HtmlTxtFieldName,HtmlFieldMaxLength)+"'")
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldFunction)<>"" THEN  HTMLVIEWLINE(" "+HtmlVars(HtmlTxtFieldName,HtmlFieldFunction))
+ HTMLVIEWLINE(" id='"+HtmlVars(HtmlTxtFieldName,HtmlFieldID)+"' name='"+HtmlVars(HtmlTxtFieldName,HtmlFieldName)+"'")
+ IF HtmlFieldDisabled=TRUE THEN HTMLVIEWLINE(" disabled")
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldStyle)<>"" THEN HTMLVIEWLINE(" style='"+HtmlVars(HtmlTxtFieldName,HtmlFieldStyle)+"'")
+ HTMLVIEWLINE(" value='")
+ HTMLVIEWLINE(HtmlVars(HtmlTxtFieldName,HtmlFieldValue))
+ HTMLVIEWLINE("' size='"+HtmlVars(HtmlTxtFieldName,HtmlFieldSize)+"' />")
+ HtmlFieldDisabled=FALSE
+END[TekProCreateTxtField]
+
+PROCEDURE TekProCreateHiddenField
+ CALL TekProIniField
+ HTMLVIEWLINE("<input type='hidden'")
+ HTMLVIEWLINE(" id='"+HtmlVars(HtmlTxtFieldName,HtmlFieldID)+"' name='"+HtmlVars(HtmlTxtFieldName,HtmlFieldName)+"'")
+ HTMLVIEWLINE(" value='" +HtmlVars(HtmlTxtFieldName,HtmlFieldValue)+"' />")
+ HtmlFieldDisabled=FALSE
+end
+
+PROCEDURE TekProCreateCheckBox
+ CALL TekProIniField
+ HTMLVIEWLINE("<input type='checkbox' value='Y'")
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldFunction)<>"" THEN  HTMLVIEWLINE(" "+HtmlVars(HtmlTxtFieldName,HtmlFieldFunction))
+ HTMLVIEWLINE(" id='"+HtmlVars(HtmlTxtFieldName,HtmlFieldID)+"' name='"+HtmlVars(HtmlTxtFieldName,HtmlFieldName)+"'")
+ IF HtmlFieldDisabled=TRUE THEN HTMLVIEWLINE(" disabled")
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="Y" THEN HTMLVIEWLINE(" checked")
+ HTMLVIEWLINE(" > "+HtmlVars(HtmlTxtFieldName,HtmlFieldLabel))
+ HtmlFieldDisabled=FALSE
+END
+
+PROCEDURE TekProCreateSelField
+ CALL TekProIniField
+ HTMLVIEWLINE(HtmlVars(HtmlTxtFieldName,HtmlFieldLabel)+ "<br/>")
+ HTMLVIEWLINE("<select name='"+HtmlVars(HtmlTxtFieldName,HtmlFieldName)+"' id='"+HtmlVars(HtmlTxtFieldName,HtmlFieldID)+"' ")
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldFunction)<>"" THEN  HTMLVIEWLINE(" "+HtmlVars(HtmlTxtFieldName,HtmlFieldFunction))
+ IF HtmlFieldDisabled=TRUE THEN HTMLVIEWLINE(" disabled")
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldStyle)<>"" THEN HTMLVIEWLINE(" style='"+HtmlVars(HtmlTxtFieldName,HtmlFieldStyle)+"' ")
+ HTMLVIEWLINE(" >")
+ HtmlFieldDisabled=FALSE
+END[TekProCreateSelField]
+
+PROCEDURE TekProCreateSelectedOption
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="" THEN HTMLVIEWLINE("<option value='' Selected >Select</option>")
+  ELSE HTMLVIEWLINE("<option value='' >Select</option>")
+END
+
+PROCEDURE TekProCreateYesNoOption
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="N" THEN HTMLVIEWLINE("<option value='N' Selected >No</option>")
+  ELSE HTMLVIEWLINE("<option value='N' >No</option>")
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="Y" THEN HTMLVIEWLINE("<option value='Y' Selected >Yes</option>")
+  ELSE HTMLVIEWLINE("<option value='Y' >Yes</option>")
+END
+
+PROCEDURE TekProCreateAllOption
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="" THEN HTMLVIEWLINE("<option value='' Selected >ALL</option>")
+  ELSE HTMLVIEWLINE("<option value='' >ALL</option>")
+END
+
+PROCEDURE TekProCreateOtherOption
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="9999999999" THEN HTMLVIEWLINE("<option value='' Selected >Other</option>")
+  ELSE HTMLVIEWLINE("<option value='9999999999' >Other</option>")
+END
+
+PROCEDURE GetSelectNoFeeOption
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="Fee Waived" THEN HTMLVIEWLINE("<option value='Fee Waived' Selected >")
+  ELSE HTMLVIEWLINE("<option value='Fee Waived' >")
+ HTMLVIEWLINE("Fee Waived ($0.00)</option>")
+END
+
+PROCEDURE TekProValRequiredField
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="Select" OR HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="" THEN
+  DO
+    POPUPMESSAGE(0,HtmlVars(HtmlTxtFieldName,HtmlFieldLabel)+" is required")
+    WebSubmitBtn=REFRESHFORM 
+  END 
+END
+
+PROCEDURE TekProCreateLabelField
+ HTMLVIEWLINE("<b>" +HtmlVars(HtmlTxtFieldName,HtmlFieldLabel)+ "</b><br/>")
+ HTMLVIEWLINE(HtmlVars(HtmlTxtFieldName,HtmlFieldValue)+"<br/>&nbsp;")
+END[TekProCreateLabelField]
+
+PROCEDURE TekProPrintConfirmation
+ FOR Jx=0 TO ConfirmationItemMax
+  DO
+   IF ConfirmationLabel(Jx)<>"" THEN
+    DO
+     HTMLVIEWLINE("<table width='100%' cellspacing='0' cellpadding='0' border='0' >")
+     HTMLVIEWLINE("<tr style='padding: 10px; background-color:"+TekBkgColor1+"'><th>")
+     HTMLVIEWLINE(ConfirmationLabel(Jx)+ "</th></tr>")
+     HTMLVIEWLINE("<div class='txt-medium'>")
+     FOR Jxx=0 TO ConfirmationCounterMax 
+      DO
+       IF ConfirmationTxt(Jx,Jxx)<>"" THEN
+        DO
+         HTMLVIEWLINE("<tr><td style='padding: 5px;' valign='middle'>")
+         IF ConfirmationCode(Jx,Jxx)=FALSE THEN
+          HTMLVIEWLINE("<img align='middle' src='" +HtmlFilePath+ "TekXMark.png' />")
+         ELSE
+          HTMLVIEWLINE("<img align='middle' src='" +HtmlFilePath+ "TekCheckMark.png' />")
+         HTMLVIEWLINE(ConfirmationTxt(Jx,Jxx))
+         HTMLVIEWLINE("</td></tr>")
+        END
+      END[FOR Jxx=0]
+     HTMLVIEWLINE("</table>")
+    END[ConfirmationLabel(Jx)<>""]
+  END[FOR Jx=0]
+END[TekProPrintConfirmation]
+
+PROCEDURE TekProCreateCalendarField
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<script type='text/javascript' >")
+ HTMLVIEWLINE("$( function() { ")
+ HTMLVIEWLINE("  $("+Q+"#"+HtmlVars(HtmlTxtFieldName,HtmlFieldID)+Q+").datepicker({")
+ HTMLVIEWLINE("    minDate:" +CalendarMinDate+ ",maxDate:" +CalendarMaxDate+ ",showOn: 'button',")
+ HTMLVIEWLINE("    onClose: function(){SubmitForm("+REFRESHFORM+");},")
+ HTMLVIEWLINE("    buttonImage: '" +HtmlFilePath+ "TekCalendar.png',")
+ HTMLVIEWLINE("    buttonImageOnly: true, buttonText: 'Select Date'});")
+ HTMLVIEWLINE("});")
+ HTMLVIEWLINE("</script>")
+END[TekProCreateCalendarField]
+
+PROCEDURE TekProGetCalendarMinAndMax
+ IF (SYSACTUALDATE<>SYSTEMDATE) THEN
+  DO 
+    IF CHARACTERSEARCH(CalendarMinDate,"-")>0 THEN 
+	 DO
+      TEMPNUM=(SYSACTUALDATE-SYSTEMDATE)+VALUE(CalendarMinDate)
+	  TEMPTEXT=FORMAT("9999999",TEMPNUM)
+      CALL TekProRemoveLeadingZeros
+      CalendarMinDate="-"+TEMPTEXT   
+	 END
+    ELSE 
+	 DO
+	  TEMPNUM=(SYSACTUALDATE-SYSTEMDATE)-VALUE(CalendarMinDate)
+	  TEMPTEXT=FORMAT("9999999",TEMPNUM)
+      CALL TekProRemoveLeadingZeros
+	  IF TEMPNUM<0 THEN
+	   CalendarMinDate=TEMPTEXT
+	  ELSE
+	   CalendarMinDate="-"+TEMPTEXT
+	 END
+
+    IF CHARACTERSEARCH(CalendarMaxDate,"-")>0 THEN 
+	 DO
+      TEMPNUM=(SYSACTUALDATE-SYSTEMDATE)+VALUE(CalendarMaxDate)
+	  TEMPTEXT=FORMAT("9999999",TEMPNUM)
+      CALL TekProRemoveLeadingZeros
+      CalendarMaxDate="-"+TEMPTEXT   
+	 END
+    ELSE 
+	 DO
+	  TEMPNUM=(SYSACTUALDATE-SYSTEMDATE)-VALUE(CalendarMaxDate)
+	  TEMPTEXT=FORMAT("9999999",TEMPNUM)
+      CALL TekProRemoveLeadingZeros
+	  IF TEMPNUM<0 THEN
+	   CalendarMaxDate=TEMPTEXT
+	  ELSE
+	   CalendarMaxDate="-"+TEMPTEXT
+	 END
+  END
+END[TekProGetCalendarMinAndMax]
+
+PROCEDURE getRequester
+ CurrentStep=1
+ CALL TekProWebHeader
+ CALL TekProWebWSteps
+ HTMLVIEWLINE("<table width='100%' cellspacing='0' cellpadding='0' border='0' >")
+ HTMLVIEWLINE("<div style='padding:20px' >")
+ HtmlTxtFieldName=RequesterLocator
+ IF RequesterObj(ObjNameLocator)="" THEN RequesterObj(ObjNameLocator)=FORMAT("9999999999",NAME:LOCATOR)
+ CALL TekProCreateSelField
+ CALL getAccountNames
+ HTMLVIEWLINE("</select><br/><br/>") 
+ HtmlTxtFieldName=InPersonRequestFlag
+ CALL TekProCreateSelField
+ CALL TekProCreateSelectedOption
+ CALL TekProCreateYesNoOption
+ HTMLVIEWLINE("</select>")
+
+ HTMLVIEWLINE("</div>")
+ HTMLVIEWLINE("</table>")
+ WebBtn(1)="CLOSE~2"
+ WebBtn(2)="NEXT~3"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ CALL TekProWebAcctOverview
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+ IF WebSubmitBtn=NEXT THEN
+  DO
+    HtmlTxtFieldName=RequesterLocator
+    CALL TekProValRequiredField
+    HtmlTxtFieldName=InPersonRequestFlag
+    CALL TekProValRequiredField
+    IF WebSubmitBtn=NEXT THEN
+     DO
+       [ *** GET SELECTED NAME ****]
+       CALL TekSetNameToRequester
+     END
+  END
+END[getRequester]
+
+PROCEDURE TekProDisplayLoanOption
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="L"+LOAN:ID THEN 
+   HTMLVIEWLINE("<option value='L" +LOAN:ID+ "' Selected >")
+ ELSE
+   HTMLVIEWLINE("<option value='L" +LOAN:ID+ "' >")
+ HTMLVIEWLINE("L"+LOAN:ID+ " " +LOAN:DESCRIPTION+ "</option>")
+END
+
+PROCEDURE TekProDisplayShareOption
+ IF HtmlVars(HtmlTxtFieldName,HtmlFieldValue)="S"+SHARE:ID THEN 
+  HTMLVIEWLINE("<option value='S" +SHARE:ID+ "' Selected >")
+ ELSE
+  HTMLVIEWLINE("<option value='S" +SHARE:ID+ "' >")
+ HTMLVIEWLINE("S"+SHARE:ID+ " " +SHARE:DESCRIPTION+ "</option>")
+END
+
+
+

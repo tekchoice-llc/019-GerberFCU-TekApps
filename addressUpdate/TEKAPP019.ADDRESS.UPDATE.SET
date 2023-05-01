@@ -1,0 +1,318 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.NAME.UPDATE.SET
+ VERSION: 001
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Programmed:    TekChoice LLC
+
+ Modified:      05-16-2022 Original Source
+
+
+********************************************************************************]
+
+ [ *** Html Fields -Must Begging at 15 *** ]
+
+ MbrVerificationType=15
+ NewNameFirst=16
+ NewNameLast=17
+ NewNameMiddle=18
+ NewStreet=19
+ NewExtraAddress=20
+ NewCity=21
+ NewState=22
+ NewZip=23
+ NewHomePhone=24
+ NewWorkPhone=25
+ NewWorkPhExt=26
+ NewMobilePhone=27
+ NewEmail=28
+ NewAltEmail=29
+ NewPrefContact=30
+ NewIDType1=31
+ NewIDType2=32
+ NewIDDesc1=33
+ NewIDDesc2=34
+ NewIDNumber1=35
+ NewIDNumber2=36
+ NewIDIssue1=37
+ NewIDIssue2=38
+ NewIDExp1=39
+ NewIDExp2=40
+
+ RequesterLongName=42
+ RequesterStreet=43
+ RequesterExtraAddress=44
+ RequesterCity=45
+ RequesterState=46
+ RequesterZip=47
+ RequesterSSN=48 
+ RequesterHomePhone=49
+ RequesterWorkPhone=50
+ RequesterWorkPhExt=51
+ RequesterMobilePhone=52
+ RequesterEmail=53
+ RequesterAltEmail=54
+ RequesterPrefContact=55
+ RequesterIDType1=56
+ RequesterIDType2=57
+ RequesterIDDesc1=58
+ RequesterIDDesc2=59
+ RequesterIDNumber1=60
+ RequesterIDNumber2=61
+ RequesterIDIssueDate1=62
+ RequesterIDIssueDate2=63
+ RequesterIDExpDate1=64
+ RequesterIDExpDate2=65
+ RequesterNameFirst=66
+ RequesterNameLast=67
+ RequesterNameMiddle=68
+ record1=69
+ record2=70
+ record3=71
+ record4=72
+ record5=73
+ record6=74
+ record7=75
+ record8=76
+ record9=77
+ record10=78
+ RequesterNameExpDate=79
+ NewNameExpDate=80
+ RequesterNameAddDate=81
+ NewNameAddDate=82
+
+ MailingStreet=83
+ MailingExtraAddress=84
+ MailingCity=85
+ MailingState=86
+ MailingZip=87
+ RequesterNameType=88
+ 
+ HtmlDocuSignEmail=89
+ HtmlDocuSignPhoneList=90
+ HtmlDocuSignAuthType=91
+ 
+ SeasonOrTemp=92
+ EffectiveDate=93
+ ExpirationDate=94
+ IdentVerMethod=95
+ OtherIdentMethod=96
+ Signed=97
+
+ RequesterEffectiveDate=98
+ RequesterExpirationDate=99
+ MailOverride=100
+ UserChar1=101
+ UserChar2=102
+ UserChar3=103
+ MailType=104
+ Signer1=105
+ Signer2=106
+ CreateMail = 107
+ Exceptions = 108
+ Exceptions2 = 109
+
+ VerifiedSSN=117
+ ReviewedIDFile=118
+ ReceivedDocumentation=119
+
+ MenuSel=120
+
+
+ menuSelection=121
+ HtmlVarsMax=121
+
+ HtmlVars(menuSelection,HtmlFieldID)="menuSelection"
+ HtmlVars(CreateMail,HtmlFieldID)="CreateMail"
+ HtmlVars(Exceptions ,HtmlFieldID)="Exceptions"
+ HtmlVars(Exceptions,HtmlFieldStyle)="width:600px;"
+ HtmlVars(Exceptions2 ,HtmlFieldID)="Exceptions2"
+
+ HtmlVars(VerifiedSSN,HtmlFieldID)="VerifiedSSN"
+ HtmlVars(ReviewedIDFile,HtmlFieldID)="ReviewedIDFile"
+ HtmlVars(ReceivedDocumentation,HtmlFieldID)="ReceivedDocumentation"
+
+
+ HtmlVars(RequesterNameExpDate,HtmlFieldID)="RequesterNameExpDate"
+ HtmlVars(NewNameExpDate,HtmlFieldID)="NewNameExpDate"
+ HtmlVars(RequesterNameAddDate,HtmlFieldID)="RequesterNameAddDate"
+ HtmlVars(NewNameAddDate,HtmlFieldID)="NewNameAddDate"
+ HtmlVars(record1,HtmlFieldID)="record1"
+ HtmlVars(record2,HtmlFieldID)="record2"
+ HtmlVars(record3,HtmlFieldID)="record3"
+ HtmlVars(record4,HtmlFieldID)="record4"
+ HtmlVars(record5,HtmlFieldID)="record5"
+ HtmlVars(record6,HtmlFieldID)="record6"
+ HtmlVars(record7,HtmlFieldID)="record7"
+ HtmlVars(record8,HtmlFieldID)="record8"
+ HtmlVars(record9,HtmlFieldID)="record9"
+ HtmlVars(record10,HtmlFieldID)="record10"
+ HtmlVars(RequesterLongName,HtmlFieldID)="RequesterLongName"
+ HtmlVars(RequesterNameFirst,HtmlFieldID)="RequesterNameFirst"
+ HtmlVars(RequesterNameLast,HtmlFieldID)="RequesterNameLast"
+ HtmlVars(RequesterNameMiddle,HtmlFieldID)="RequesterNameMiddle"
+ HtmlVars(RequesterStreet,HtmlFieldID)="RequesterStreet"
+ HtmlVars(RequesterExtraAddress,HtmlFieldID)="RequesterExtraAddress"
+ HtmlVars(RequesterCity,HtmlFieldID)="RequesterCity"
+ HtmlVars(RequesterState,HtmlFieldID)="RequesterState"
+ HtmlVars(RequesterZip,HtmlFieldID)="RequesterZip"
+ HtmlVars(RequesterSSN,HtmlFieldID)="RequesterSSN"
+ HtmlVars(RequesterHomePhone,HtmlFieldID)="RequesterHomePhone"
+ HtmlVars(RequesterWorkPhone,HtmlFieldID)="RequesterWorkPhone"
+ HtmlVars(RequesterWorkPhExt,HtmlFieldID)="RequesterWorkPhExt"
+ HtmlVars(RequesterMobilePhone,HtmlFieldID)="RequesterMobilePhone"
+ HtmlVars(RequesterEmail,HtmlFieldID)="RequesterEmail"
+ HtmlVars(RequesterAltEmail,HtmlFieldID)="RequesterAltEmail"
+ HtmlVars(RequesterPrefContact,HtmlFieldID)="RequesterPrefContact"
+ HtmlVars(RequesterIDType1,HtmlFieldID)="RequesterIDType1"
+ HtmlVars(RequesterIDType2,HtmlFieldID)="RequesterIDType2"
+ HtmlVars(RequesterIDDesc1,HtmlFieldID)="RequesterIDDesc1"
+ HtmlVars(RequesterIDDesc2,HtmlFieldID)="RequesterIDDesc2"
+ HtmlVars(RequesterIDNumber1,HtmlFieldID)="RequesterIDNumber1"
+ HtmlVars(RequesterIDNumber2,HtmlFieldID)="RequesterIDNumber2"
+ HtmlVars(RequesterIDIssueDate1,HtmlFieldID)="RequesterIDIssueDate1"
+ HtmlVars(RequesterIDIssueDate2,HtmlFieldID)="RequesterIDIssueDate2"
+ HtmlVars(RequesterIDExpDate1,HtmlFieldID)="RequesterIDExpDate1"
+ HtmlVars(RequesterIDExpDate2,HtmlFieldID)="RequesterIDExpDate2"
+ HtmlVars(RequesterNameType,HtmlFieldID)="RequesterNameType"
+ HtmlVars(RequesterEffectiveDate,HtmlFieldID)="RequesterEffectiveDate"
+ HtmlVars(RequesterExpirationDate,HtmlFieldID)="RequesterExpirationDate"
+
+ HtmlVars(NewNameFirst,HtmlFieldID)="NewNameFirst"
+ HtmlVars(NewNameLast,HtmlFieldID)="NewNameLast"
+ HtmlVars(NewNameMiddle,HtmlFieldID)="NewNameMiddle"
+ HtmlVars(NewStreet,HtmlFieldID)="NewStreet"
+ HtmlVars(NewExtraAddress,HtmlFieldID)="NewExtraAddress"
+ HtmlVars(NewCity,HtmlFieldID)="NewCity"
+ HtmlVars(NewState,HtmlFieldID)="NewState"
+ HtmlVars(NewZip,HtmlFieldID)="NewZip"
+ HtmlVars(NewHomePhone,HtmlFieldID)="NewHomePhone"
+ HtmlVars(NewHomePhone,HtmlFieldMaxLength)="10"
+ HtmlVars(NewWorkPhone,HtmlFieldID)="NewWorkPhone"
+ HtmlVars(NewWorkPhone,HtmlFieldMaxLength)="10"
+ HtmlVars(NewWorkPhExt,HtmlFieldID)="NewWorkPhExt"
+ HtmlVars(NewWorkPhExt,HtmlFieldMaxLength)="6"
+ HtmlVars(NewMobilePhone,HtmlFieldID)="NewMobilePhone"
+ HtmlVars(NewMobilePhone,HtmlFieldMaxLength)="10"
+ HtmlVars(NewWorkPhExt,HtmlFieldFunction)="oninput='OnlyNumbers(this);' "
+ HtmlVars(NewHomePhone,HtmlFieldFunction)="onblur='formatPhoneNumber(this);' oninput='OnlyNumbers(this);' "
+ HtmlVars(NewWorkPhone,HtmlFieldFunction)="onblur='formatPhoneNumber(this);' oninput='OnlyNumbers(this);' "
+ HtmlVars(NewMobilePhone,HtmlFieldFunction)="onblur='formatPhoneNumber(this);' oninput='OnlyNumbers(this);' "
+ HtmlVars(NewEmail,HtmlFieldID)="NewEmail"
+ HtmlVars(NewAltEmail,HtmlFieldID)="NewAltEmail"
+ HtmlVars(NewPrefContact,HtmlFieldID)="NewPrefContact"
+ HtmlVars(NewIDType1,HtmlFieldID)="NewIDType1"
+ HtmlVars(NewIDType2,HtmlFieldID)="NewIDType2"
+ HtmlVars(NewIDDesc1,HtmlFieldID)="NewIDDesc1"
+ HtmlVars(NewIDDesc2,HtmlFieldID)="NewIDDesc2"
+ HtmlVars(NewIDNumber1,HtmlFieldID)="NewIDNumber1"
+ HtmlVars(NewIDNumber2,HtmlFieldID)="NewIDNumber2"
+ HtmlVars(NewIDIssue1,HtmlFieldID)="NewIDIssue1"
+ HtmlVars(NewIDIssue2,HtmlFieldID)="NewIDIssue2"
+ HtmlVars(NewIDExp1,HtmlFieldID)="NewIDExp1"
+ HtmlVars(NewIDExp2,HtmlFieldID)="NewIDExp2"
+
+ 
+ HtmlVars(NewIDIssue1,HtmlFieldFunction)="onblur='ValFormat(this,"+Q+"DateFormat"+Q+");' "
+ HtmlVars(NewIDIssue2,HtmlFieldFunction)="onblur='ValFormat(this,"+Q+"DateFormat"+Q+");' "
+ HtmlVars(NewIDExp1,HtmlFieldFunction)="onblur='ValFormat(this,"+Q+"DateFormat"+Q+");' "
+ HtmlVars(NewIDExp2,HtmlFieldFunction)="onblur='ValFormat(this,"+Q+"DateFormat"+Q+");' "
+ HtmlVars(MailingStreet,HtmlFieldID)="MailingStreet"
+ HtmlVars(MailingExtraAddress,HtmlFieldID)="MailingExtraAddress"
+ HtmlVars(MailingCity,HtmlFieldID)="MailingCity"
+ HtmlVars(MailingState,HtmlFieldID)="MailingState"
+ HtmlVars(MailingZip,HtmlFieldID)="MailingZip"
+ HtmlVars(SeasonOrTemp,HtmlFieldID)="SeasonOrTemp"
+ HtmlVars(EffectiveDate,HtmlFieldID)="EffectiveDate"
+ HtmlVars(ExpirationDate,HtmlFieldID)="ExpirationDate"
+ HtmlVars(ExpirationDate,HtmlFieldLabel)="Expiration Date"
+ HtmlVars(EffectiveDate,HtmlFieldLabel)="Effective Date"
+ HtmlVars(IdentVerMethod,HtmlFieldID)="IdentVerMethod"
+ HtmlVars(MailType,HtmlFieldID)="MailType"
+ HtmlVars(OtherIdentMethod,HtmlFieldID)="OtherIdentMethod"
+ HtmlVars(OtherIdentMethod,HtmlFieldLabel)="Other"
+ HtmlVars(Signed,HtmlFieldID)="Signed"
+ HtmlVars(Signer1,HtmlFieldID)="Signer1"
+ HtmlVars(Signer2,HtmlFieldID)="Signer2"
+ HtmlVars(MailOverride,HtmlFieldID)="MailOverride"
+ HtmlVars(UserChar1,HtmlFieldID)="UserChar1"
+ HtmlVars(UserChar2,HtmlFieldID)="UserChar2"
+ HtmlVars(UserChar3,HtmlFieldID)="UserChar3"
+ HtmlVars(IdentVerMethod,HtmlFieldFunction)="onclick='EnableDisableTB("+Q+"Other"+Q+","+Q+HtmlVars(OtherIdentMethod,HtmlFieldID)+Q+");'"
+ HtmlVars(MailType,HtmlFieldFunction)="onclick='EnableDisableDates(this,"+Q+HtmlVars(EffectiveDate,HtmlFieldID)+Q+","+Q+HtmlVars(ExpirationDate,HtmlFieldID)+Q+");'"
+ HtmlVars(MbrVerificationType,HtmlFieldID)="MbrVerificationType"
+ HtmlVars(MenuSel,HtmlFieldID)="MenuSel"
+
+ HtmlVars(NewStreet,HtmlFieldMaxLength)="40"
+ HtmlVars(NewExtraAddress,HtmlFieldMaxLength)="40"
+ HtmlVars(NewCity,HtmlFieldMaxLength)="40"
+ HtmlVars(NewState,HtmlFieldMaxLength)="10"
+ HtmlVars(NewZip,HtmlFieldMaxLength)="10"
+
+ HtmlVars(MailingStreet,HtmlFieldMaxLength)="40"
+ HtmlVars(MailingExtraAddress,HtmlFieldMaxLength)="40"
+ HtmlVars(MailingCity,HtmlFieldMaxLength)="40"
+ HtmlVars(MailingState,HtmlFieldMaxLength)="10"
+ HtmlVars(MailingZip,HtmlFieldMaxLength)="10"
+
+ HtmlVars(NewNameFirst,HtmlFieldMaxLength)="20"
+ HtmlVars(NewNameMiddle,HtmlFieldMaxLength)="10"
+ HtmlVars(NewNameLast,HtmlFieldMaxLength)="40"
+ HtmlVars(Exceptions,HtmlFieldMaxLength)="132"
+ HtmlVars(Exceptions,HtmlPrecede)="1"
+ HtmlVars(Exceptions2,HtmlFieldMaxLength)="132"
+
+[*** ID Types Array ***]
+IDENTTYPE(0)="000 Unknown"
+IDENTTYPE(1)="001 Known Existing Member"
+IDENTTYPE(2)="002 State Drivers License"
+IDENTTYPE(3)="003 State ID Card"
+IDENTTYPE(4)="004 US Passport"
+IDENTTYPE(5)="005 Foreign Passport"
+IDENTTYPE(6)="006 Military ID Card"
+IDENTTYPE(7)="007 Foreign Government Issued ID"
+IDENTTYPE(8)="008 Resident Alien Card"
+IDENTTYPE(9)="009 Disabled-elderly with no ID"
+IDENTTYPE(10)="010 Foreign entity with no ID"
+IDENTTYPE(11)="011 Law Enforcement"
+IDENTTYPE(12)="012 Amish Customer with no ID"
+IDENTTYPE(101)="101 Social Security Card"
+IDENTTYPE(102)="102 Dept of HS/Auth to Work"
+IDENTTYPE(103)="103 Utility Bill"
+IDENTTYPE(104)="104 Property Deed"
+IDENTTYPE(105)="105 Property Tax Documentation"
+IDENTTYPE(106)="106 Vending License"
+IDENTTYPE(107)="107 Government Official Mail"
+IDENTTYPE(108)="108 Student ID Card"
+IDENTTYPE(109)="109 Birth Certificate"
+IDENTTYPE(110)="110 Trust Agreement"
+IDENTTYPE(111)="111 Gov't Issued Business License"
+IDENTTYPE(112)="112 Cert of Assumed Name (DBA)"
+IDENTTYPE(113)="113 Parternership Agreement"
+IDENTTYPE(114)="114 Operating Agreement (LLC)"
+IDENTTYPE(115)="115 Articles of Incorporation"
+IDENTTYPE(116)="116 Death Certificate"
+IDENTTYPE(117)="117 Letter of Authority"
+IDENTTYPE(118)="118 Power of Attorney"
+IDENTTYPE(119)="119 Court Appointment Letter"
+IDENTTYPE(120)="120 Social Security Apptmt Letter"
+IDENTTYPE(121)="121 VA Federal Fiduciary Appt Ltr"
+IDENTTYPE(122)="122 Articles of Organization (LLC)"
+IDENTTYPE(123)="123 Minor - No ID"
+IDENTTYPE(124)="124 GFCU Custodial Membership Agrm"
+TOTALIDTYPES = 124
+
+[*** Preferred Contact Types ***]
+PREFCONTACTTYPE(0)="00 Not Specified"
+PREFCONTACTTYPE(1)="01 Call Home Phone"
+PREFCONTACTTYPE(2)="02 Call Work Phone"
+PREFCONTACTTYPE(3)="03 Call Mobile Phone"
+
+

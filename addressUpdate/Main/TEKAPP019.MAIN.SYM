@@ -1,0 +1,129 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.MAIN.SYM
+
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Description:   
+
+ Programmed:    TekChoice LLC
+
+ Modified:      02.01.20 Original Source
+
+********************************************************************************]
+
+PROCEDURE returnError
+ PRINT "h|EndPointResponse|EndPointResponse"
+ NEWLINE
+ PRINT "r|0|Invalid Request|"
+ NEWLINE
+ PRINT "New SymX Record"
+ NEWLINE  
+END[returnError]
+
+PROCEDURE returnOK
+ PRINT "h|EndPointResponse|EndPointResponse"
+ NEWLINE
+ PRINT "r|1|Ok To Continue|"
+ NEWLINE
+ PRINT "New SymX Record"
+ NEWLINE  
+END[returnOK]
+
+PROCEDURE returnCustomError
+ PRINT "h|EndPointResponse|EndPointResponse"
+ NEWLINE
+ PRINT "r|503|"+TEMPTEXT+"|"
+ NEWLINE
+END[returnCustomError]
+
+PROCEDURE returnCustomErrorCode
+ PRINT "h|EndPointResponse|EndPointResponse"
+ NEWLINE
+ PRINT "r|"+TEMPTEXT +"|"+TEMPTEXT1+"|"
+ NEWLINE
+ PRINT "New SymX Record"
+ NEWLINE 
+END[returnCustomErrorCode]
+
+PROCEDURE TekProSymXPrintConfirmation
+ TEMPFLAG=TRUE
+ FOR J=0 TO ConfirmationItemMax
+  DO
+   IF ConfirmationLabel(J)<>"" THEN
+    DO
+     PRINT "h|ConfirmationList|ConfirmationResponse" 
+     NEWLINE
+     PRINT "r|Label|" +ConfirmationLabel(J)+ "|"
+     NEWLINE
+     FOR Jx=0 TO ConfirmationCounterMax 
+      DO
+       IF ConfirmationTxt(J,Jx)<>"" THEN
+        DO
+         IF ConfirmationCode(J,Jx)=FALSE THEN TEMPFLAG=FALSE
+         PRINT "r|" +FORMAT("9",ConfirmationCode(J,Jx)) +"|" +ConfirmationTxt(J,Jx)+ "|"
+         NEWLINE
+        END
+      END[FOR Jx=0]
+     PRINT "r|Status|" +FORMAT("9",TEMPFLAG)+"|"
+     NEWLINE
+     PRINT "New SymX Record"
+     NEWLINE
+    END
+  END[FOR J=0]
+
+ PRINT "h|singleVariable|ConfirmationViewType"
+ NEWLINE
+ IF SymXChannel="2" THEN
+  PRINT "r|0|Staff|"
+ ELSE
+  PRINT "r|1|Member|"
+ NEWLINE
+ PRINT "New SymX Record"
+ NEWLINE   
+END[TekProSymXPrintConfirmation]
+
+PROCEDURE getAlertMsgBox
+ [
+   0 - ERROR
+   1 - OK
+   2 - WARNNING
+   3 - INFO
+ ]
+ PRINT "h|singleVariable|AlertMsgBox" 
+ NEWLINE
+ PRINT "r|"+TEMPTEXT+"|"+TEMPTEXT1+"|"
+ NEWLINE
+ PRINT "New SymX Record"
+ NEWLINE
+END[getAlertMsgBox]
+
+PROCEDURE TekgetENVPARAMCHAR1
+ POS=CHARACTERSEARCH(TmpRec,"|")
+ SymXAcct=SEGMENT(TmpRec,1,POS-1)
+ TmpRec=SEGMENT(TmpRec,POS+1,LENGTH(TmpRec))
+ POS=CHARACTERSEARCH(TmpRec,"|")
+ SymXSSN=SEGMENT(TmpRec,1,POS-1)
+ TmpRec=SEGMENT(TmpRec,POS+1,LENGTH(TmpRec))
+ POS=CHARACTERSEARCH(TmpRec,"|")
+ SymXTekApp=SEGMENT(TmpRec,1,POS-1)
+ TmpRec=SEGMENT(TmpRec,POS+1,LENGTH(TmpRec))
+ POS=CHARACTERSEARCH(TmpRec,"|")
+ SymXTekAppMenu=SEGMENT(TmpRec,1,POS-1)
+ TmpRec=SEGMENT(TmpRec,POS+1,LENGTH(TmpRec))
+ POS=CHARACTERSEARCH(TmpRec,"|")
+ SymXChannel=SEGMENT(TmpRec,1,POS-1)
+ SymXEnv=SEGMENT(TmpRec,POS+1,LENGTH(TmpRec))
+END[TekgetENVPARAMCHAR1]
+
+
+
+
+
+

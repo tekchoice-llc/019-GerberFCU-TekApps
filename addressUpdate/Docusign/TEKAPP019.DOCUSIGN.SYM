@@ -1,0 +1,147 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.DOCUSIGN.SYM
+ VERSION: 002
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Description:   
+
+ Files:         1. PowerOn Specfiles
+
+ Programmed:    TekChoice LLC
+
+ Modified:      02.01.20 Original Source
+
+********************************************************************************]
+
+SUBROUTINE DEMAND WINDOWS
+STATELESS
+TARGET=ACCOUNT
+
+DEFINE
+ #INCLUDE "RD.GETDATA.DEF"
+ #INCLUDE "TEKAPP019.MAIN.DEF"
+ docuLogFile=CHARACTER
+END[DEFINE]
+
+SETUP
+ #INCLUDE "TEKAPP019.MAIN.SET"
+ docuLogFile="TEKAPP019.DOCUSIGN.LOG"
+ TmpRec=@ENVPARAMCHAR1
+ CALL TekgetENVPARAMCHAR1
+ CurrentApp(CurrentAppStep,1)="SymXchange"
+END[SETUP]
+
+PRINT TITLE=WebPageTitle 
+  
+ 
+  [
+ PRINT "SymXAcct:" +SymXAcct
+ NEWLINE
+ PRINT "SymXSSN: " +SymXSSN
+ NEWLINE
+ PRINT "SymXTekApp:" + SymXTekApp
+ NEWLINE
+ PRINT "SymXTekAppMenu: " +SymXTekAppMenu
+ NEWLINE
+ PRINT "SymXChannel: " +SymXChannel
+ NEWLINE
+ PRINT "SymXEnv: " +SymXEnv
+ NEWLINE
+ 
+ ]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ IF SymXTekAppMenu="getEnvelopesSent" THEN CALL getEnvelopesSent
+ ELSE IF SymXTekAppMenu="getEnvelopesDone" THEN CALL getEnvelopesDone 
+ ELSE IF SymXTekAppMenu="getDocuSignSettings" THEN CALL getDocuSignSettings 
+ ELSE CALL returnError
+END[PRINT]
+
+
+PROCEDURE getDocuSignSettings
+ FILEOPEN("LETTER","TEKAPP019.MAIN.CU.SET","READ",FNUMBER,FERROR)
+ FILEREADLINE(FNUMBER,FLINE,FERROR)
+ WHILE FERROR=""
+  DO
+    IF SEGMENT(FLINE,1,1) <> "#" THEN
+     DO
+      PRINT FLINE
+      NEWLINE
+     END
+	FILEREADLINE(FNUMBER,FLINE,FERROR)
+  END
+ FILECLOSE(FNUMBER,FERROR)
+END[getDocuSignSettings]
+
+PROCEDURE getEnvelopesSent
+ FILEOPEN("LETTER",docuLogFile,"READ",FNUMBER,FERROR)
+ FILEREADLINE(FNUMBER,FLINE,FERROR)
+ WHILE FERROR=""
+  DO
+    TEMPNUM=LENGTH(FLINE)
+    IF SEGMENT(FLINE,TEMPNUM-3,TEMPNUM) = "SENT" THEN
+     DO
+      PRINT FLINE
+      NEWLINE
+     END
+	FILEREADLINE(FNUMBER,FLINE,FERROR)
+  END
+ FILECLOSE(FNUMBER,FERROR)
+END[getEnvelopesSent]
+
+PROCEDURE getEnvelopesDone
+[
+PRINT "IN getEnvelopesDone FILE:" +docuLogFile
+NEWLINE
+]
+ FILEOPEN("LETTER",docuLogFile,"READ",FNUMBER,FERROR)
+ FILEREADLINE(FNUMBER,FLINE,FERROR)
+ WHILE FERROR=""
+  DO
+    TEMPNUM=LENGTH(FLINE)
+    IF SEGMENT(FLINE,TEMPNUM-3,TEMPNUM) = "DONE" THEN
+     DO
+      PRINT FLINE
+      NEWLINE
+     END
+	FILEREADLINE(FNUMBER,FLINE,FERROR)
+  END
+ FILECLOSE(FNUMBER,FERROR)
+END[getEnvelopesDone]
+
+PROCEDURE getDocuLogRecord
+[
+ POS=CHARACTERSEARCH(FLINE,"|")
+ fie=SEGMENT(FLINE,1,POS-1)
+ TmpRec=SEGMENT(FLINE,POS+1,LENGTH(FLINE))
+ POS=CHARACTERSEARCH(TmpRec,"|")
+ SymXSSN=SEGMENT(TmpRec,1,POS-1)
+ TmpRec=SEGMENT(TmpRec,POS+1,LENGTH(TmpRec))
+ POS=CHARACTERSEARCH(TmpRec,"|")
+ SymXTekApp=SEGMENT(TmpRec,1,POS-1)
+ TmpRec=SEGMENT(TmpRec,POS+1,LENGTH(TmpRec))
+ POS=CHARACTERSEARCH(TmpRec,"|")
+ SymXTekAppMenu=SEGMENT(TmpRec,1,POS-1)
+ TmpRec=SEGMENT(TmpRec,POS+1,LENGTH(TmpRec))
+ POS=CHARACTERSEARCH(TmpRec,"|")
+ SymXChannel=SEGMENT(TmpRec,1,POS-1)
+ SymXEnv=SEGMENT(TmpRec,POS+1,LENGTH(TmpRec))
+ ]
+END[getDocuLogRecord]
+
+#INCLUDE "TEKAPP019.MAIN.SYM"
+
+
+

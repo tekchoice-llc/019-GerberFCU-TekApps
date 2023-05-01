@@ -1,0 +1,197 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.ADDRESS.UPDATE.SYM
+ VERSION: 002
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Description:   
+
+ Files:         1. PowerOn Specfiles
+
+ Programmed:    TekChoice LLC
+
+ Modified:      02.01.20 Original Source
+
+********************************************************************************]
+
+SUBROUTINE DEMAND WINDOWS
+STATELESS
+TARGET=ACCOUNT
+
+DEFINE
+ #INCLUDE "RD.GETDATA.DEF"
+ #INCLUDE "TEKAPP019.MAIN.DEF"
+ #INCLUDE "TEKAPP019.DOCUSIGNREST.DEF"
+ #INCLUDE "TEKAPP019.ADDRESS.UPDATE.DEF"
+ docuLogFile=CHARACTER
+ envelopeDate=CHARACTER
+ envelopeId=CHARACTER
+ envelopeFileName=CHARACTER
+ envelopeAppName=CHARACTER
+ envelopeStatus=CHARACTER
+ noteTextpos=NUMBER
+END[DEFINE]
+
+SETUP
+ #INCLUDE "TEKAPP019.MAIN.SET"
+ #INCLUDE "TEKAPP019.ADDRESS.UPDATE.SET"
+ docuLogFile="TEKAPP019.DOCUSIGN.LOG"
+ 
+ CALL setCrediUnionVars
+ CurrentApp(CurrentAppName,1)="TEKAPP019.ADDRESS.UPDATE"
+ CurrentApp(CurrentAppChannel,1)="SymXchange"
+ CurrentApp(CurrentAppStep,1)="SymXchange"
+ CALL TekProWebSetupApp
+ 
+ TmpRec=@ENVPARAMCHAR1
+ CALL TekgetENVPARAMCHAR1
+
+END[SETUP]
+
+PRINT TITLE=WebPageTitle 
+ IF SymXTekAppMenu="processDocuSignEnvelope" THEN CALL processDocuSignEnvelope
+ ELSE IF SymXTekAppMenu="updateDocuSignEnvelopeStatus" THEN CALL updateDocuSignEnvelopeStatus 
+ ELSE IF SymXTekAppMenu="getEnvelopesEpisysStatus" THEN CALL getEnvelopesEpisysStatus 
+ ELSE CALL returnError
+END[PRINT]
+
+PROCEDURE getEnvelopesEpisysStatus
+ FILEOPEN("LETTER",docuLogFile,"READ",FNUMBER,ERRORTEXT)
+ FILEREADLINE(FNUMBER,TXTLINE,ERRORTEXT)
+ WHILE ErrorText=""
+  DO
+   PRINT TXTLINE
+   NEWLINE
+   FILEREADLINE(FNUMBER,TXTLINE,ERRORTEXT)
+  END
+ FILECLOSE(FNUMBER,ERRORTEXT)
+END[getEnvelopesEpisysStatus]
+
+
+PROCEDURE updateDocuSignEnvelopeStatus
+ envelopeDate=@ENVPARAMCHAR2
+ IF LENGTH(envelopeDate) > 10 THEN envelopeDate=SEGMENT(envelopeDate,1,10)
+ envelopeId=UPPERCASE(@ENVPARAMCHAR3)
+ envelopeFileName=@ENVPARAMCHAR4
+ TEMPTEXT=@ENVPARAMCHAR5
+ POS=CHARACTERSEARCH(TEMPTEXT,"|")
+ TXTLINEVALUE=SEGMENT(TEMPTEXT,POS+1,LENGTH(TEMPTEXT))
+ envelopeAppName=SEGMENT(TEMPTEXT,1,POS-1)  
+ envelopeStatus = TXTLINEVALUE
+ PRINT envelopeStatus
+ NEWLINE
+ CALL getFileData
+ PRINT "ACCOUNT: "+HtmlVars(HtmlAccountNumber,HtmlFieldValue)
+ NEWLINE
+ FOR ACCOUNT HtmlVars(HtmlAccountNumber,HtmlFieldValue)
+  DO
+    CALL updateNote	 
+  END  
+ TEMPTEXT = envelopeStatus
+ CALL updateEnvelopeStatus  
+ PRINT "DONE"
+ NEWLINE
+END[updateDocuSignEnvelopeStatus]
+
+PROCEDURE processDocuSignEnvelope
+ envelopeDate=@ENVPARAMCHAR2     [08/02/2022]
+ envelopeId=UPPERCASE(@ENVPARAMCHAR3)      [c582ece5-fbbc-4782-8024-0ba6ba68ef09]
+ envelopeFileName=@ENVPARAMCHAR4 [54330440001042410081510]
+ envelopeAppName=@ENVPARAMCHAR5  [TEKAPP019.ADDRESS.UPDATE] 
+ CALL getFileData
+ 
+ CALL addRecordstoListItem
+ CALL updateRecords
+ FOR ACCOUNT HtmlVars(HtmlAccountNumber,HtmlFieldValue)
+  DO
+    envelopeStatus="COMPLETED"
+    CALL updateNote	 
+  END
+ TEMPTEXT = "DONE"
+ CALL updateEnvelopeStatus
+END[processDocuSignEnvelope]
+
+PROCEDURE TekProDisplayHtmlNameList
+
+END[TekProDisplayHtmlNameList]
+
+PROCEDURE getFileData
+ FILEOPEN("LETTER",envelopeFileName,"READ",FNUMBER,ERRORTEXT)
+ FILEREADLINE(FNUMBER,TXTLINE,ERRORTEXT)
+ WHILE ErrorText=""
+  DO
+   POS=CHARACTERSEARCH(TXTLINE,"|")
+   TXTLINEVALUE=SEGMENT(TXTLINE,POS+1,LENGTH(TXTLINE))
+   TXTLINE=SEGMENT(TXTLINE,1,POS-1)
+   FOR I=0 TO HtmlVarsMax
+    DO
+	  IF HtmlVars(I,HtmlFieldID) = TXTLINE THEN
+	   DO
+	     HtmlVars(I,HtmlFieldValue) = TXTLINEVALUE
+	   END
+	END
+   FILEREADLINE(FNUMBER,TXTLINE,ERRORTEXT)
+  END
+ FILECLOSE(FNUMBER,ERRORTEXT)
+END[getFileData]
+
+PROCEDURE updateNote
+ FOR EACH NOTE WITH NOTE:TEXT:1="DOCUSIGN" AND NOTE:TEXT:3="ID: " + UPPERCASE(envelopeId)
+  DO
+   TEMPNUM=NOTE:LOCATOR
+  END
+ 
+ noteTextpos=6
+ FOR EACH NOTE WITH NOTE:LOCATOR=TEMPNUM
+  DO
+   FOR I=1 TO 50
+    DO
+	 IF NOTE:TEXT:(I)="" THEN 
+	  DO
+	    noteTextpos=I
+		I=50
+	  END
+	END
+  END
+  
+ FMPERFORM REVISE NOTE LOC TEMPNUM (0,0,ERRORTEXT)
+  DO
+   SET TEXT:(noteTextpos) TO FORMAT("99/99/9999",SYSACTUALDATE) + " " +FORMAT("99",HOUR(SYSACTUALTIME)) + ":" + FORMAT("99",MINUTE(SYSACTUALTIME)) + " " +envelopeStatus
+  END
+ CALL CheckConfirmationError
+END[updateNote]
+
+
+PROCEDURE updateEnvelopeStatus
+
+ TEMPTEXT1 = envelopeDate+"|"+envelopeId+"|"+envelopeFileName+"|"+envelopeAppName+"|"
+ TEMPTEXT2 = envelopeDate+"|"+envelopeId+"|"+envelopeFileName+"|"+envelopeAppName+"|"+ TEMPTEXT
+
+ FILEOPEN("LETTER",docuLogFile,"READWRITE",FNUMBER,FERROR)
+ WHILE FERROR="" 
+   DO
+    FILEGETPOS(FNUMBER,Pos,FERROR)
+    FILEREADLINE(FNUMBER,FLINE,FERROR)
+	
+    IF TEMPTEXT1 = SEGMENT(FLINE,1,LENGTH(FLINE)-4) THEN
+     DO
+       FILESETPOS(FNUMBER,Pos,FERROR)
+       FILEWRITELINE(FNUMBER,TEMPTEXT2,FERROR)
+     END
+   END[WHILE FERROR="" ]
+ FILECLOSE(FNUMBER,FERROR)
+END[updateEnvelopeStatus]
+
+#INCLUDE "TEKAPP019.MAIN.SYM"
+#INCLUDE "TEKAPP019.MAIN.PRO"
+#INCLUDE "TEKAPP019.ADDRESS.UPDATE.PRO"
+#INCLUDE "TEKAPP019.ADDRESS.UPDATE.CU"
+
+
+

@@ -1,0 +1,7 @@
+
+
+SUBERROR   = CHARACTER
+PDFPORT    = CHARACTER                          [PowerFrame port, i.e. 42XXX]
+PDFNAME    = CHARACTER                        [form/workflow name]
+LETTERNAME = CHARACTER
+PDFHOST    = CHARACTER                        [fqdn of PF/Symitar App server]

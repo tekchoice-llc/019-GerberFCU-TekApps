@@ -1,0 +1,194 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.MAIN.SET
+ VERSION: 001
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Programmed:    TekChoice LLC
+
+ Modified:      05-16-2022 Original Source
+
+ 
+********************************************************************************]
+
+[ *** Html Fields Properties *** ]
+ HtmlFieldLabel     =0
+ HtmlFieldValue     =1
+ HtmlFieldID        =2
+ HtmlFieldName      =3
+ HtmlFieldMaxLength =4
+ HtmlFieldSize      =5
+ HtmlFieldFunction  =6
+ HtmlFieldStyle     =7
+ HtmlPrecede        =8
+
+[ *** Html Vars *** ]
+ WebFormName         = "htmlrginputform"
+ WebDisplayAcctTitle = TRUE
+ WebMaxBtn           = 10
+ BACK                = "1"
+ CANCEL              = "2"
+ NEXT                = "3"
+ REFRESHFORM         = "4"
+ SAVEDATA            = "5"
+ DELETEDATA          = "6"
+ UPDATEDATA          = "7"
+ MbrServicesMax      = 99
+ MONEYFORMAT         = "$###,###,##9.99+"
+ DATEFORMAT          = "99/99/9999"
+ TIMEFORMAT          = "99:99"
+ RATEFORMAT          = "999.999"
+ Q                   = CTRLCHR(34)
+ ACTIONPOST          = "~NoClose"
+ TRUE                = 1
+ FALSE               = 0
+ TekBkgColor1        = "#DCDCDC"
+ TekBkgColor2        = "#FFFFFF"
+ MyOption            = 0
+ HtmlTrackStartTime  = 1
+ HtmlTrackEndTime    = 2
+ RequesterLocator    = 3
+ InPersonRequestFlag = 4
+ HtmlPostResponse    = 5
+ HtmlAccountNumber   = 6
+ ListItem            = 7
+ ListItemAction      = 8
+ HtmlLongName        = 9
+ HtmlAnchor          = 10
+ HtmlFocus           = 11
+ HtmlVarsMax         = 11
+ ConfirmationItemMax = 20
+ ConfirmationCounterMax = 99
+ HtmlVars(HtmlTrackStartTime,HtmlFieldLabel)="Start Time"
+ HtmlVars(HtmlTrackEndTime,HtmlFieldLabel)="End Time"
+ HtmlVars(RequesterLocator,HtmlFieldID)="RequesterLocator"
+ HtmlVars(RequesterLocator,HtmlFieldLabel)="Requester"
+ HtmlVars(InPersonRequestFlag,HtmlFieldID)="InPersonRequestFlag"
+ HtmlVars(InPersonRequestFlag,HtmlFieldLabel)="Is member physically present?"
+ HtmlVars(HtmlPostResponse,HtmlFieldID)="HtmlPostResponse"
+ HtmlVars(HtmlAccountNumber,HtmlFieldID)="HtmlAccountNumber"
+ HtmlVars(HtmlAccountNumber,HtmlFieldValue)=ACCOUNT:NUMBER
+ HtmlVars(ListItem,HtmlFieldID)="ListItem"
+ HtmlVars(ListItemAction,HtmlFieldID)="ListItemAction"
+ HtmlVars(HtmlLongName,HtmlFieldID)="HtmlLongName"
+ HtmlVars(HtmlAnchor,HtmlFieldID)="HtmlAnchor"
+ HtmlVars(HtmlFocus,HtmlFieldID)="HtmlFocus"
+
+[*** Current User ***]
+ CurrentUserName  =1
+ CurrentUserNum   =2
+ CurrentUserEmail =3
+ CurrentUserPhone =4
+ CurrentSYM       =5
+ CurrentConsole   =6
+ CurrentBranch    =7
+ CurrentAppName   =8
+ CurrentAppChannel=9
+ CurrentAppStep   =10
+ CurrentAppMax    =10
+ CurrentApp(CurrentUserName,HtmlFieldID)="CurrentUserName"
+ CurrentApp(CurrentUserNum,HtmlFieldID)="CurrentUserNum"
+ CurrentApp(CurrentUserEmail,HtmlFieldID)="CurrentUserEmail"
+ CurrentApp(CurrentUserPhone,HtmlFieldID)="CurrentUserPhone"
+ CurrentApp(CurrentSYM,HtmlFieldID)="CurrentSYM"
+ CurrentApp(CurrentConsole,HtmlFieldID)="CurrentConsole"
+ CurrentApp(CurrentBranch,HtmlFieldID)="CurrentBranch"
+ CurrentApp(CurrentAppName,HtmlFieldID)="CurrentAppName"
+ CurrentApp(CurrentAppChannel,HtmlFieldID)="CurrentAppChannel"
+ CurrentApp(CurrentAppStep,HtmlFieldID)="CurrentAppStep"
+
+
+[*** Text Fields ***]
+ HtmlDefaultFieldMaxLength ="30"
+ HtmlDefaultFieldSize      ="30"
+
+[*** CU Brand Colors ***]
+ TekCUProgressBarActive=0
+ TekCUProgressBarBkg   =1
+ TekCUProgressBar      =2
+ TekCUBarBkg           =3
+ TekCUBtnHover         =4
+ TekCUBtn              =5
+ TekColorWarning       =6
+ TekColorComment       =7
+ TekColorGo            =8
+ CUColorsMax           =8
+ CUColors(TekCUProgressBarActive,HtmlFieldLabel)="TekCUProgressBarActive"
+ CUColors(TekCUProgressBarBkg,HtmlFieldLabel)="TekCUProgressBarBkg"
+ CUColors(TekCUProgressBar,HtmlFieldLabel)="TekCUProgressBar"
+ CUColors(TekCUBarBkg,HtmlFieldLabel)="TekCUBarBkg"
+ CUColors(TekCUBtnHover,HtmlFieldLabel)="TekCUBtnHover"
+ CUColors(TekCUBtn,HtmlFieldLabel)="TekCUBtn"
+ CUColors(TekColorWarning,HtmlFieldLabel)="TekColorWarning"
+ CUColors(TekColorComment,HtmlFieldLabel)="TekColorComment"
+ CUColors(TekColorGo,HtmlFieldLabel)="TekColorGo"
+
+[ *** List Items *** ]
+ MaxListItem=99
+
+[ *** Name Record *** ]
+ ObjNameLocator      = 0
+ ObjNameSSN          = 1
+ ObjNameLongName     = 2
+ ObjNameDOB          = 3
+ ObjNameLast         = 4
+ ObjNameFirst        = 5
+ ObjNameStreet       = 6
+ ObjNameMiddle       = 7
+ ObjNameExtraAddress = 8
+ ObjNameCity         = 9
+ ObjNameState        = 10
+ ObjNameZipCode      = 11
+ ObjNameMobilePhone  = 12
+ ObjNameHomePhone    = 13
+ ObjNameWorkPhone    = 14
+ ObjNameWorkPhExt    = 15
+ ObjNameEmail        = 16
+ ObjNameAltEmail     = 17
+ ObjNameIDType1      = 18
+ ObjNameIDType2      = 19
+ ObjNameIDDesc1      = 20
+ ObjNameIDDesc2      = 21
+ ObjNameIDNumber1    = 22
+ ObjNameIDNumber2    = 23
+ ObjNameIDIssueDate1 = 24
+ ObjNameIDIssueDate2 = 25
+ ObjNameIDExpDate1   = 26
+ ObjNameIDExpDate2   = 27
+ ObjNameIDVerDate1   = 28
+ ObjNameIDVerDate2   = 29
+ ObjNamePrefContact  = 30
+ ObjNameLevel        = 31
+ ObjNameType         = 32
+ ObjNameFormat       = 33
+ ObjNameEffectiveDate= 34
+ ObjNameExpirationDate=35
+ NameListMaxFields=35
+ NameListMax=50
+
+ NameTypeOptions(0)="Primary"
+ NameTypeOptions(1)="Joint"
+ NameTypeOptions(2)="Mailing"
+ NameTypeOptions(3)="Alternate Mailing"
+ NameTypeOptions(4)="Beneficiary"
+ NameTypeOptions(5)="Custodian"
+ NameTypeOptions(6)="Trustee"
+ NameTypeOptions(7)="Responsible Individual"
+ NameTypeOptions(8)="Power of attorney"
+ NameTypeOptions(9)="Authorized signer"
+ NameTypeOptions(10)="Div payee"
+ NameTypeOptions(11)="Matur Payee"
+ NameTypeOptions(12)="Coverdell ESA"
+ NameTypeOptions(13)="Next of Kin"
+ NameTypeOptions(20)="Co-Borrower"
+ NameTypeOptions(21)="Co-Signer"
+ NameTypeOptions(50)="Credit Union"
+ NameTypeOptions(51)="CU Joint"
+ NameTypeOptions(52)="CU Mailing"
+ NameTypeOptions(53)="CU Alternate"
