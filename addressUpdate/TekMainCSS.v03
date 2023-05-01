@@ -1,0 +1,134 @@
+<style>
+* {box-sizing: border-box;}
+body {margin: 0;padding: 0;background-color: #eee;font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;}
+hr {height: 2px;border:none;background-color: #dfdfdf;}
+.hr-cell {height: 1px;}
+.hr-div {width:100%;overflow:hidden; height: 2px;display:inline-block;width:auto;margin-bottom:7px;}
+.hr-warning {border-color:TekColorWarning;
+  background-color:TekColorWarning;
+  color:TekColorWarning;
+  border:1px solid TekColorWarning; }
+.hr-comment {border-color:TekColorComment;
+  background-color:TekColorComment;
+  color:TekColorComment;
+  border:1px solid TekColorComment; }
+.hr-ok {border-color:TekColorGo;
+  background-color:TekColorGo;
+  color:TekColorGo;
+  border:1px solid TekColorGo; }
+.Leftblock {background: white;text-align: left;padding: 0px;valing: top;width: 300px;display:inline-block;
+            *display: inline;zoom: 1;vertical-align:top;margin-left: 0px;}
+.Rightblock {background: white;text-align: left;padding: 0px;valing: top;display:inline-block;
+            *display: inline;zoom: 1;vertical-align:top;margin: 0 10px 10px 0px;}
+.blockbar{width:100%;overflow:hidden; padding:10px;font-size: Large;text-align:center,display:inline-block;width:auto}
+.bar{width:100%;overflow:hidden;font-size: x-Large} .bar{display:inline-block;width:auto}
+.bar .bar-item{padding:8px 16px;float:left;width:auto;border:none;outline:none;display:block}
+.pos-right{float:right!important}
+.txt-center{text-align:center}
+.divider {margin-top:10px;border-top:1px solid #ccc!important;width:100%;height:10px;}
+.btn{border:none;display:inline-block;*display: inline;zoom: 1;  outline:0;padding: 8px 20px;margin:0px 5px;
+    vertical-align:middle;overflow:hidden;text-decoration:none;color: white;background-color:TekCUBtn!important;
+    text-align:center;font-size: 16px;font-weight:bold;cursor:pointer;white-space:nowrap;}
+.btnDisabled{border:none;display:inline-block;*display: inline;zoom: 1;  outline:0;padding: 8px 20px;margin:0px 5px;
+    vertical-align:middle;overflow:hidden;text-decoration:none;color: black;background-color: gray!important;
+    text-align:center;font-size: 16px;font-weight:bold;cursor:pointer;white-space:nowrap;}
+.btn:hover{background-color:TekCUBtnHover!important}
+a.btn:focus{background-color:TekCUBtnHover!important}
+.btnLetter{border:none;display:inline-block;*display: inline;zoom: 1;  outline:0;padding: 2px 10px;
+    vertical-align:middle;overflow:hidden;text-decoration:none;color: white;background-color:TekCUBtn!important;
+    text-align:center;font-size: X-Large;cursor:pointer;white-space:nowrap;}
+.btnLetter:hover{background-color:TekCUBtnHover!important}
+.StepBorderOn {border-bottom: solid 6px TekCUProgressBar;color:#898989!important}
+.StepBorderOff {border-bottom: solid 6px TekCUProgressBarBkg;color:#898989!important}
+.StepBorderCurrent {border-bottom: solid 6px TekCUProgressBarActive;color:#000!important}
+.txt-small {font-size: small;}
+.txt-medium {font-size: medium;}
+.txt-large {font-size: large;}
+.txt-xlarge {font-size: X-large;}
+.txt-wide {letter-spacing: 4px;}
+select {background: white;font-size: 16px;width: 300px;height:32px;line-height:32px;}
+td {padding:0px 5px 10px 0px;}
+.tblRowPadding {padding: 5px;}
+.inputtext {padding:5px;height:30px;width: 300px;font-size: 16px;}
+.bkg-warning,.hover-warning:hover{color:#fff!important;background-color:TekColorWarning!important}  
+.txt-warning{color:TekColorWarning!important}
+.bkg-comment,.hover-comment:hover{color:#fff!important;background-color:TekColorComment!important}  
+.txt-comment{color:TekColorComment!important}
+.bkg-ok,.hover-comment:ok{color:#fff!important;background-color:TekColorGo!important}  
+.txt-ok{color:TekColorGo!important}
+.bkg-bar,.bkg-hover-bar:hover{color:#fff!important;background-color:TekCUBarBkg!important} 
+.MoneyCss {text-align: right; padding-right: 20px;}
+.TextCss {text-align: left; padding-right: 15px;}
+.WhiteBorderTop { border-top:1pt solid white;}
+.tooltip {
+  position: relative;
+  display: inline-block;
+ *display: inline;
+ *zoom: 1;
+  /*border-bottom: 1px dotted black;*/
+}
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: -5px;
+  right: 110%;
+}
+.tooltip .tooltiptext::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent black;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+.tooltip .tooltiptext-right{
+  top: -15px!important;
+  left:150%;
+}
+.tooltip .tooltiptext-right::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -8%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
+}
+.tooltip .tooltiptext-info{
+ color: #fefefe;
+ text-decoration:none;
+ background:TekCUBtnHover!important;
+ padding:2px 9px;
+ border-radius: 20px;
+}
+.tooltip .tooltiptext-info:hover{
+ background: #fefefe!important;
+ color:TekCUBtnHover!important;
+ border:1px solid TekCUBtnHover!important;
+ padding:1px 8px;
+}
+input[type='checkbox'] {
+    width:30px;
+    height:30px;
+}
+input[type='checkbox']:checked {
+    background: #abd;
+}
+code {
+    font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+</style>

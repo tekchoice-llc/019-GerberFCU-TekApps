@@ -1,0 +1,287 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.MAIN.DEF
+ VERSION: 001
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Version:       001   
+
+ Sections:      1. Base Variable Definition
+
+ Programmed:    TekChoice LLC
+
+ Modified:      05-16-2022 Original Source
+
+********************************************************************************]
+
+ TekCUName           = Character
+ defaultOperatorEmail= Character
+ defaultOperatorPhone= Character
+ HtmlFilePath        =Character
+
+[*** CSS Colors ***]
+ CUColors               = Character Array(99,2)
+ CUColorsMax            = Number
+ TekCUProgressBarBkg    = Number
+ TekCUBarBkg            = Number
+ TekCUProgressBar       = Number
+ TekCUProgressBarActive = Number
+ TekCUBtnHover          = Number
+ TekCUBtn               = Number
+ TekColorWarning        = Number
+ TekColorComment        = Number
+ TekColorGo             = Number
+ TekCUColor1            = Character 
+ TekCUColor2            = Character 
+ TekCUColor3            = Character 
+ TekZebraColor          = Character 
+ TekBkgColor1           = Character 
+ TekBkgColor2           = Character 
+ TekChoiceEnvFlag       = Number
+
+ WARNINGDESC   = Character Array(999)
+ MbrServices   = Character Array(99)
+ MbrServicesMax= Number
+
+[ *** i/o files *** ]
+ FNUMBER       = Number
+ FERROR        = Character
+ ERRORTEXT     = Character
+ FLINE         = Character
+ TXTLINE       = Character
+ TXTLINEVALUE  = Character
+ Pos           = Number
+
+[ *** Temp & Log File ***]
+ TekTempFileName  = Character 
+ TekErrorLogFile  = Character 
+ TekTranLogFile   = Character
+ TekTranRequestLogFile = Character
+ TekAppName=CHARACTER
+ TekMainCSS=Character
+ TekMainJS=Character
+ TekMainCUVars=Character
+
+[*** Current User ***]
+ CurrentApp        = Character Array(10,2)
+ CurrentUserName   = Number
+ CurrentUserNum    = Number
+ CurrentUserEmail  = Number
+ CurrentUserPhone  = Number
+ CurrentSYM        = Number
+ CurrentConsole    = Number
+ CurrentBranch     = Number
+ CurrentAppName    = Number
+ CurrentAppChannel = Number
+ CurrentAppStep    = Number
+ CurrentAppMax     = Number
+
+[ *** SymXchange *** ]
+ SymXAcct=CHARACTER
+ SymXSSN=CHARACTER
+ SymXTekApp=CHARACTER
+ SymXTekAppMenu=CHARACTER
+ SymXChannel=CHARACTER
+ SymXEnv=CHARACTER
+ TmpRec=CHARACTER
+
+[ *** Web Variables ***]
+ TekAppPDFProcedure  = Character
+ TekWebCalendar      = Number
+ TekAppTranLog       = Number
+ RGSTATUS            = Character
+ INPUTCOUNT          = Number
+ INPUTFIELDS         = Character Array(199)
+ TMPINPUTFIELDS      = Character
+ ACTIONPOST          = Character
+ WebFormName         = Character
+ WebPageTitle        = Character
+ WebDisplayAcctTitle = Number
+
+[*** Html Fields ***]
+ HtmlTxtFieldName    = Number 
+ MyOption            = Number
+ HtmlTrackStartTime  = Number
+ HtmlTrackEndTime    = Number
+ RequesterLocator    = Number
+ InPersonRequestFlag = Number
+ HtmlPostResponse    = Number
+ HtmlAccountNumber   = Number
+ HtmlLongName        = Number
+ HtmlAnchor          = Number
+ HtmlFocus           = Number
+ HtmlVars            = Character Array(199,8) 
+ HtmlVarsMax         = Number 
+ HtmlDefaultFieldMaxLength= Character(3)
+ HtmlDefaultFieldSize= Character(3)
+ HtmlFieldID         = Number 
+ HtmlFieldName       = Number 
+ HtmlFieldLabel      = Number 
+ HtmlFieldValue      = Number 
+ HtmlFieldMaxLength  = Number 
+ HtmlFieldSize       = Number 
+ HtmlFieldDisabled   = Number 
+ HtmlFieldFunction   = Number 
+ HtmlFieldStyle      = Number 
+ HtmlStartDate       = Number 
+ HtmlEndDate         = Number
+ HtmlPrecede         = Number
+
+[ *** HTML Btns *** ]
+ WebBtn              = Character Array(10)
+ WebMaxBtn           = Number  
+ WebBtnText          = Character
+ WebBtnAction        = Character
+ WebSubmitBtn        = Character(1)
+ BACK                = Character(1)
+ CANCEL              = Character(1)
+ NEXT                = Character(1)
+ REFRESHFORM         = Character(1)
+ SAVEDATA            = Character(1)
+ DELETEDATA          = Character(1)
+ UPDATEDATA          = Character(1)
+ ERRMSG              = Character
+
+[ *** Global Vars *** ]
+ STARTTIME     = Character
+ ENDTIME       = Character
+ MONEYFORMAT   = Character
+ DATEFORMAT    = Character
+ TIMEFORMAT    = Character
+ RATEFORMAT    = Character    
+ TEMPTEXT      = Character
+ TEMPTEXT1     = Character
+ TEMPTEXT2     = Character
+ TEMPNUM       = Number
+ TEMPFLOAT     = Float
+ TEMPMONEY     = Money
+ TEMPDATE      = DATE
+ TEMPFLAG      = Number
+ REPEATED      = Number
+ ConfirmationLabel = CHARACTER ARRAY(99)
+ ConfirmationItem = Number
+ ConfirmationCounter = Number
+ ConfirmationCode =Number ARRAY (99,99)
+ ConfirmationTxt =Character ARRAY (99,99)
+ ConfirmationItemMax=Number
+ ConfirmationCounterMax=Number
+ CalendarMinDate = Character
+ CalendarMaxDate = Character
+ MinTranDate     = Character
+ ZebraColor      = Character
+ TRUE            = Number
+ FALSE           = Number
+ Q               = Character(1)
+ LastDayOfMonthFlag= Number
+ SPELLMONTH      = Character
+ HolidayArray    = DATE ARRAY(300)
+ NextBusinessDay= DATE
+ WeekDayFlag = Number
+ HolidayFlag = Number
+
+[ *** Html Steps *** ]
+ StepName      = Character Array(10)
+ NumOfSteps    = Number
+ CurrentStep   = Number
+
+[ *** TRANPERFORM *** ]
+ SEQ1          = Number
+ SEQ2          = Number
+ CHECKINGACCTCODE = Character
+ CHECKNUMBER   = Character
+
+[ *** Counters ***]
+ I   = Number
+ Ix  = Number
+ Ixx = Number
+ J   = Number
+ Jx  = Number
+ Jxx = Number
+
+[ *** PDF ***]
+ PDFSigned=Number
+ PDFForm=Character
+ SkipFormsForTesting=Number
+
+[ *** List Item ***]
+ ListItem=Number
+ ListItemAction=Number
+ MaxListItem=Number
+ ListItemArray=Character ARRAY(99)
+ ListItemCounter=Number
+ AllListItemArray=Character ARRAY(99)
+
+[ *** Name List ***]
+ NameListMax       = Number
+ NameListMaxFields = Number
+ NameListFound     = Number
+ NameListPos       = Number
+ NameList          = Character Array(50,99)
+ NameObj           = Character Array(99)
+ ValNameInAcct     = Number
+ NameInAcctLevel   = Number
+
+[ *** Name Obj *** ]
+ RequesterObj        = Character Array(99)
+ ObjNameLocator      = Number 
+ ObjNameSSN          = Number 
+ ObjNameLongName     = Number 
+ ObjNameDOB          = Number
+ ObjNameLast         = Number 
+ ObjNameFirst        = Number 
+ ObjNameMiddle       = Number
+ ObjNameStreet       = Number
+ ObjNameExtraAddress = Number 
+ ObjNameCity         = Number 
+ ObjNameState        = Number 
+ ObjNameZipCode      = Number 
+ ObjNameMobilePhone  = Number 
+ ObjNameHomePhone    = Number 
+ ObjNameWorkPhone    = Number 
+ ObjNameWorkPhExt    = Number
+ ObjNameEmail        = Number 
+ ObjNameAltEmail     = Number
+ ObjNameIDType1      = Number
+ ObjNameIDType2      = Number
+ ObjNameIDDesc1      = Number
+ ObjNameIDDesc2      = Number
+ ObjNameIDNumber1    = Number
+ ObjNameIDNumber2    = Number
+ ObjNameIDIssueDate1 = Number
+ ObjNameIDIssueDate2 = Number
+ ObjNameIDExpDate1   = Number
+ ObjNameIDExpDate2   = Number
+ ObjNameIDVerDate1   = Number
+ ObjNameIDVerDate2   = Number
+ ObjNamePrefContact  = Number 
+ ObjNameLevel        = Number 
+ ObjNameType         = Number
+ ObjNameFormat       = Number
+ ObjNameEffectiveDate= Number
+ ObjNameExpirationDate=Number
+ NameTypeOptions     = Character Array(99) 
+
+[ *** LOAN *** ]
+ LoanID=Character
+ LoanAvailableID=Number
+ LoanAvailableIDFlag=Number
+
+[ *** SHARE *** ]
+ TmpFirstShareID = Character
+
+[ *** Validate Field Change PRO *** ]
+ validateFieldChangesFlag=Number
+ validateFieldChangesType=Character
+ validateFieldChangesSince=Date
+
+[*** ID  and Contact Type Vars ***]
+ IDENTTYPE      = CHARACTER(40) ARRAY(999)
+ TOTALIDTYPES   = NUMBER 
+ PREFCONTACTTYPE = CHARACTER(40) ARRAY(9)
+

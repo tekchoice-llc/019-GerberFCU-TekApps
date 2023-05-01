@@ -1,0 +1,1171 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.ADDRESS.UPDATE
+ VERSION: 001
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Description:   WorkFlow Template
+
+ Files:         1. PowerOn Specfiles
+                  a. TEKAPP019.ADDRESS.UPDATE
+                  b. TEKAPP019.ADDRESS.UPDATE.DEF
+                  c. TEKAPP019.ADDRESS.UPDATE.SET
+                  d. TEKAPP019.ADDRESS.UPDATE.PRO
+                  e. TEKAPP019.ADDRESS.UPDATE.CU
+                  f. TEKAPP019.ADDRESS.UPDATE.REL
+                  g. TEKAPP019.MAIN.DEF
+                  h. TEKAPP019.MAIN.SET
+                  i. TEKAPP019.MAIN.PRO
+                  j. TEKAPP019.MAIN.HTM
+                  K. TEKAPP019.DOCUSIGNREST.DEF
+                  L. TEKAPP019.DOCUSIGNREST.PRO
+                  M. TEKAPP019.POWERFRAME.PRO
+                  N. TEKAPP019.POWERFRAME.DEF
+
+ Programmed:    TekChoice LLC
+
+ Modified:      02-06-2023 Elda S.
+ 
+********************************************************************************]
+
+
+SUBROUTINE DEMAND WINDOWS
+STATELESS
+TARGET=ACCOUNT
+
+DEFINE
+ #INCLUDE "RD.GETDATA.DEF"
+ #INCLUDE "TEKAPP019.ADDRESS.UPDATE.DEF"
+ #INCLUDE "TEKAPP019.MAIN.DEF"
+ #INCLUDE "TEKAPP019.DOCUSIGNREST.DEF"
+ #INCLUDE "TEKAPP019.POWERFRAME.DEF"
+
+
+ menuUserSelection=CHARACTER ARRAY(4)
+ maxMenuSelection=Number
+
+ 
+END[DEFINE]
+
+SETUP
+ #INCLUDE "TEKAPP019.MAIN.SET"
+ #INCLUDE "TEKAPP019.ADDRESS.UPDATE.SET"
+
+ btnCustomCSS="style='width: 800px; text-align: left; padding: 15px' "
+ CALL setCrediUnionVars
+ CALL TekSetGlobalVariables
+ CALL TekSetGlobaldDocuSignVars
+ CALL GetDoAddressUpdateFlag
+ TekWebCalendar=TRUE
+
+ CurrentApp(CurrentAppName,1)="TEKAPP019.ADDRESS.UPDATE"
+ CurrentApp(CurrentAppChannel,1)="01 Episys Client"
+ CALL TekProWebSetupApp
+ CurrentApp(CurrentAppStep,1)="Initial App Call"
+ ACCT=ACCOUNT:NUMBER
+ WebPageTitle = "Member Record Update - "+ACCT
+IF DoAddressUpdateFlag=TRUE THEN
+DO
+ menuUserSelection(1)="Update Contact Info & ID" 
+ menuUserSelection(2)="Update Address"
+ maxMenuSelection=2
+END
+ELSE
+DO
+ menuUserSelection(1)="Update Contact Info & ID" 
+ maxMenuSelection=1
+END
+
+ CALL ClearHtmlVars
+ SelectAllFlag=FALSE
+
+ 
+ StepName(1)="Requester"
+ StepName(2)="Main Menu"
+ StepName(3)="Update Name"
+ StepName(4)="Verify"
+ StepName(5)="Signature"
+ StepName(6)="Confirmation"
+
+ NumOfSteps=6
+ HtmlVars(HtmlAccountNumber,HtmlFieldValue)=ACCOUNT:NUMBER
+
+
+ RGSTATUS = "GetRequester"
+
+
+ WHILE RGSTATUS <> "CANCEL" 
+ DO
+ WHILELIMIT=1000000000
+
+ IF RGSTATUS="GetRequester" THEN
+   DO
+
+     CurrentApp(CurrentAppStep,1)=RGSTATUS
+     CALL GetRequester
+     IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+     IF WebSubmitBtn=NEXT        THEN 
+      DO
+        CALL setRequesterName   
+        CALL prepopulateFields        
+        RGSTATUS="MainMenu"
+		[RGSTATUS="TestDocu"]
+      END
+   END
+   
+    IF RGSTATUS="TestDocu" THEN
+     DO
+       CurrentStep=2
+       CurrentApp(CurrentAppStep,1)=RGSTATUS
+       CALL getDocuAuthType
+       IF WebSubmitBtn=BACK        THEN RGSTATUS="GetRequester"
+       IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+       IF WebSubmitBtn=REFRESHFORM THEN RGSTATUS="TestDocu"
+       IF WebSubmitBtn=NEXT        THEN RGSTATUS="CANCEL"
+     END
+
+ IF RGSTATUS="MainMenu" THEN
+   DO
+     CALL displayMainMenu
+     [popupmessage(0,HtmlVars(menuSelection,HtmlFieldValue))]
+     IF WebSubmitBtn=NEXT        THEN RGSTATUS = HtmlVars(menuSelection,HtmlFieldValue)
+     IF WebSubmitBtn=BACK        THEN RGSTATUS="GetRequester"
+     IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+   END
+
+
+
+    IF RGSTATUS="sendDocusign" THEN
+     DO
+       CurrentStep=5
+       CurrentApp(CurrentAppStep,1)=RGSTATUS
+       HtmlVars(IdentVerMethod,HtmlFieldValue)="Other"
+       HtmlVars(OtherIdentMethod,HtmlFieldValue)="DocuSign"
+       CALL getDocuAuthType
+       IF WebSubmitBtn=BACK        THEN RGSTATUS=HtmlVars(menuSelection,HtmlFieldValue)
+       IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+       IF WebSubmitBtn=REFRESHFORM THEN RGSTATUS="sendDocusign"
+       IF WebSubmitBtn=NEXT THEN RGSTATUS="CANCEL"
+     END
+ 
+ IF RGSTATUS="confirmMemberSignedForms" THEN
+  DO
+     CALL confirmMemberSignedForms
+     IF WebSubmitBtn=BACK        THEN RGSTATUS = "confirmIdentityVerification"
+     IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+     IF WebSubmitBtn=NEXT        THEN RGSTATUS="updateRecords"
+  END
+  
+ IF RGSTATUS="confirmIdentityVerification" THEN
+ DO
+ 
+   CALL confirmIdentityVerification
+   IF WebSubmitBtn=BACK        THEN RGSTATUS = HtmlVars(menuSelection,HtmlFieldValue)
+   IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+   [IF WebSubmitBtn=NEXT        THEN RGSTATUS="confirmMemberSignedForms"]
+   IF WebSubmitBtn=NEXT        THEN RGSTATUS="sendPowerFrame" 
+ END
+ 
+ IF RGSTATUS="sendPowerFrame" THEN
+ DO
+   CALL SendPowerFrame
+   IF HtmlVars(Signed,HtmlFieldValue)="Yes" THEN RGSTATUS="updateRecords"
+ END
+ 
+
+ IF RGSTATUS="updateRecords" THEN
+  DO
+     CALL updateRecords
+     CALL DisplayConfirmation
+     IF WebSubmitBtn=BACK        THEN RGSTATUS = "CANCEL"
+     IF WebSubmitBtn=NEXT        THEN RGSTATUS = "MainMenu"
+  END
+  
+ IF RGSTATUS="accountVerification" THEN
+ DO
+ 
+   CALL accountVerification
+   IF WebSubmitBtn=BACK        THEN RGSTATUS = HtmlVars(menuSelection,HtmlFieldValue)
+   IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+   IF WebSubmitBtn=NEXT        THEN  
+   DO
+    IF HtmlVars(InPersonRequestFlag,HtmlFieldValue)="Y" THEN 
+      RGSTATUS = "confirmIdentityVerification"
+    ELSE
+      RGSTATUS = "sendDocusign"
+   END 
+ END
+   
+ IF RGSTATUS=menuUserSelection(2) THEN
+   DO
+     HtmlVars(MenuSel,HtmlFieldValue)="GetNewAddress"
+     CALL GetNewAddress
+     IF WebSubmitBtn=BACK        THEN RGSTATUS="MainMenu"
+     IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+     IF WebSubmitBtn=NEXT        THEN RGSTATUS = "accountVerification"
+   END
+
+
+ IF RGSTATUS=menuUserSelection(1) THEN
+   DO
+     HtmlVars(MenuSel,HtmlFieldValue)="GetNewContact"
+     CALL GetNewContact
+     IF WebSubmitBtn=BACK        THEN RGSTATUS="MainMenu"
+     IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+     IF WebSubmitBtn=NEXT        THEN RGSTATUS="updateRecords"
+     [IF WebSubmitBtn=NEXT        THEN 
+      DO
+       IF HtmlVars(InPersonRequestFlag,HtmlFieldValue)="Y" THEN 
+        RGSTATUS = "confirmIdentityVerification"
+        [RGSTATUS = "sendDocusign"]
+       ELSE
+        RGSTATUS = "sendDocusign"
+      END]
+   END
+
+
+ [IF RGSTATUS=menuUserSelection(4) THEN
+   DO 
+     HtmlVars(MenuSel,HtmlFieldValue)="getNonAccountHolder" 
+     IF WebSubmitBtn=NEXT THEN CALL clearNonAccountFields
+     CALL getNonAccountHolder
+     IF WebSubmitBtn=SAVEDATA THEN CALL saveNonAccountholderData
+     IF WebSubmitBtn=BACK        THEN RGSTATUS="MainMenu"
+     IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+   END]
+
+  END[WHILE]
+END[SETUP]
+
+PRINT TITLE=WebPageTitle
+ SUPPRESSNEWLINE
+END[PRINT]
+
+PROCEDURE displayMainMenu
+ CurrentStep=2
+ ACTIONPOST          = "~NoClose"
+ CALL TekProWebHeader
+ CALL CustomJS
+ CALL TekProWebWSteps
+ HTMLVIEWLINE("<input type='hidden' name='menuSelection' id='menuSelection' value='1' >")
+ HTMLVIEWLINE("<div style='padding:20px 40px' >")
+
+ FOR I=1 TO maxMenuSelection
+  DO
+    HTMLVIEWLINE("<a href='#' class='btn txt-large' ")
+    HTMLVIEWLINE(btnCustomCSS)
+    HTMLVIEWLINE("onclick='UserSelectionJS("+Q+"menuSelection"+Q+","+Q+menuUserSelection(I)+Q+");return false;' >")
+    HTMLVIEWLINE(FORMAT("9",I) +". "+ menuUserSelection(I) + "</a><br/><br/>")
+  END
+
+ HTMLVIEWLINE("</div>") 
+ WebBtn(1)="BACK~1"
+ WebBtn(2)="CLOSE~2"
+
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ CALL TekProWebAcctOverview
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+END[displayMainMenu]
+
+PROCEDURE updateName
+ CurrentStep=3
+ ACTIONPOST          = "~NoClose"
+ CALL TekProWebHeader
+ CALL CustomJS
+ CALL TekProWebWSteps
+ HTMLVIEWLINE("<input type='hidden' name='" +HtmlVars(ListItem,HtmlFieldID)+"' id='" +HtmlVars(ListItem,HtmlFieldID)+"' value='' >")
+ HTMLVIEWLINE("<input type='hidden' name='" +HtmlVars(ListItemAction,HtmlFieldID)+"' id='" +HtmlVars(ListItemAction,HtmlFieldID)+"' value='' >")
+ HTMLVIEWLINE("<br/>")
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=RequesterLongName
+ CALL TekProCreateLabelField
+ HTMLVIEWLINE("<br/>")
+ HTMLVIEWLINE(HtmlVars(RequesterStreet,HtmlFieldValue)+"<br/>")
+ IF HtmlVars(RequesterExtraAddress,HtmlFieldValue)<>"" THEN HTMLVIEWLINE(HtmlVars(RequesterExtraAddress,HtmlFieldValue)+"<br/>")
+ HTMLVIEWLINE(HtmlVars(RequesterCity,HtmlFieldValue)+", "+HtmlVars(RequesterState,HtmlFieldValue)+", "+HtmlVars(RequesterZip,HtmlFieldValue)+"<br/>")
+ HTMLVIEWLINE("</td><td>")
+
+ HTMLVIEWLINE("<td style='padding-top: 15px' ><b>Update Member Data</b>")
+ HTMLVIEWLINE("<br/><br/>")
+ HtmlTxtFieldName=NewNameFirst
+ CALL TekProCreateTxtField
+
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewNameLast
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td>")
+ 
+ IF HtmlVars(InPersonRequestFlag,HtmlFieldValue)="N" THEN  
+ DO
+ HtmlTxtFieldName=NewEmail
+ CALL TekProCreateTxtField
+ END
+ HTMLVIEWLINE("</td></tr>")
+ HTMLVIEWLINE("</table>")
+
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Account</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>ID</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>First</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Last</b></td>")
+ [HTMLVIEWLINE("<td class='StepBorderOn'><b>Middle</b></td>")]
+ HTMLVIEWLINE("<td class='StepBorderOn'>")
+ HTMLVIEWLINE("<a href='#' class='btn txt-medium' ")
+ IF SelectAllFlag=TRUE THEN
+  HTMLVIEWLINE("onclick="+Q+"UpdateListItem('DeselectAll','" +TmpRec+ "');return false;"+Q+" >Deselect All</a>")
+ ELSE
+  HTMLVIEWLINE("onclick="+Q+"UpdateListItem('SelectAll','" +TmpRec+ "');return false;"+Q+" >Select All</a>")
+ HTMLVIEWLINE("</td></tr>")
+
+ CALL displayNameData
+
+ HTMLVIEWLINE("</table>")
+
+ WebBtn(1)="BACK~1"
+ WebBtn(2)="CLOSE~2"
+ WebBtn(3)="NEXT~3"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+ IF WebSubmitBtn=REFRESHFORM THEN
+  DO
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="Add" THEN CALL AddListItem
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="Remove" THEN CALL RemoveListItem
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="SelectAll" THEN CALL SelectAllListItem
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="DeselectAll" THEN CALL ClearListItemArray
+  END[WebSubmitBtn=REFRESHFORM]
+ IF WebSubmitBtn=NEXT THEN
+  DO
+    CALL GetListItemCounter
+    IF ListItemCounter<1 THEN 
+     DO
+      POPUPMESSAGE(0,"Select at least one record to continue")
+      WebSubmitBtn=REFRESHFORM 
+     END
+    HtmlTxtFieldName=NewNameLast
+    CALL TekProValRequiredField
+    IF RequesterNameFormat="Individual" THEN
+     DO HtmlTxtFieldName=NewNameFirst
+      CALL TekProValRequiredField
+     END  
+  END[WebSubmitBtn=NEXT]
+END[updateName]
+
+
+PROCEDURE GetNewAddress
+ CurrentStep = 3
+ ACTIONPOST = "~NoClose"
+ CALL TekProWebHeader
+ CALL CustomStyle
+ CALL CustomJS
+ 
+ CALL TekProWebWSteps
+ HTMLVIEWLINE("<input type='hidden' name='" +HtmlVars(ListItem,HtmlFieldID)+"' id='" +HtmlVars(ListItem,HtmlFieldID)+"' value='' >")
+ HTMLVIEWLINE("<input type='hidden' name='" +HtmlVars(ListItemAction,HtmlFieldID)+"' id='" +HtmlVars(ListItemAction,HtmlFieldID)+"' value='' >")
+
+ HTMLVIEWLINE("<br/>")
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=RequesterLongName
+ CALL TekProCreateLabelField
+ HTMLVIEWLINE("<br/>")
+ HTMLVIEWLINE("</td><td colspan='2'>"+ACCT+"</td></tr>")
+ HTMLVIEWLINE("<tr><td colspan='3'>")
+ HTMLVIEWLINE(HtmlVars(RequesterStreet,HtmlFieldValue)+"<br/>")
+ IF HtmlVars(RequesterExtraAddress,HtmlFieldValue)<>"" THEN HTMLVIEWLINE(HtmlVars(RequesterExtraAddress,HtmlFieldValue)+"<br/>")
+ HTMLVIEWLINE(HtmlVars(RequesterCity,HtmlFieldValue)+", "+HtmlVars(RequesterState,HtmlFieldValue)+", "+HtmlVars(RequesterZip,HtmlFieldValue)+"<br/>")
+ HTMLVIEWLINE("</td></tr>")
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=NewStreet
+ CALL TekProCreateTxtField
+ IF HtmlVars(InPersonRequestFlag,HtmlFieldValue)="Y" THEN  
+ DO
+ HTMLVIEWLINE("</td><td colspan='2'>")
+ HtmlTxtFieldName=NewExtraAddress
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td>")
+ HTMLVIEWLINE("<br/>")
+ END
+ ELSE
+ DO
+ HTMLVIEWLINE("</td><td>")
+ HtmlTxtFieldName=NewExtraAddress
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td>")
+ HtmlTxtFieldName=NewEmail
+ CALL TekProCreateTxtField
+ END
+ 
+ HTMLVIEWLINE("</td></tr>")
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=NewCity
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td>")
+ HtmlTxtFieldName=NewState
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td>")
+ HtmlTxtFieldName=NewZip
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td></tr>")
+ 
+ HTMLVIEWLINE("<tr><td colspan='2'>")
+ HTMLVIEWLINE("<b>" +"Mail Address Type"+ "</b><br/>")
+ HTMLVIEWLINE("</td></tr>")
+ 
+ HTMLVIEWLINE("<tr><td class='bordered rightbottom' colspan='2'>")
+ HTMLVIEWLINE("<p style='font-size:12px; padding-top: 0px; color:red'>For use with Mail Address Type only</p>")
+ HTMLVIEWLINE("<input type='radio'")
+ IF HtmlVars(MailType,HtmlFieldFunction)<>"" THEN  HTMLVIEWLINE(" "+HtmlVars(MailType,HtmlFieldFunction))
+ IF HtmlVars(MailType,HtmlFieldValue)="Permanent" or HtmlVars(MailType,HtmlFieldValue)=""  THEN 
+ HTMLVIEWLINE(" id='Permanent' name='"+HtmlVars(MailType,HtmlFieldID)+"' value='Permanent' checked /> Permanent")
+ ELSE
+  HTMLVIEWLINE(" id='Permanent' name='"+HtmlVars(MailType,HtmlFieldID)+"' value='Permanent' /> Permanent")
+ 
+ HTMLVIEWLINE("<input type='radio'")
+ IF HtmlVars(MailType,HtmlFieldFunction)<>"" THEN  HTMLVIEWLINE(" "+HtmlVars(MailType,HtmlFieldFunction))
+ IF HtmlVars(MailType,HtmlFieldValue)="Seasonal" THEN 
+ HTMLVIEWLINE(" id='Seasonal' name='"+HtmlVars(MailType,HtmlFieldID)+"' value='Seasonal' checked /> Recurring ")
+ ELSE
+   HTMLVIEWLINE(" id='Seasonal' name='"+HtmlVars(MailType,HtmlFieldID)+"' value='Seasonal' /> Recurring ")
+
+ HTMLVIEWLINE("<input type='radio'")
+ IF HtmlVars(MailType,HtmlFieldFunction)<>"" THEN  HTMLVIEWLINE(" "+HtmlVars(MailType,HtmlFieldFunction))
+ IF HtmlVars(MailType,HtmlFieldValue)="Temporary" THEN 
+  HTMLVIEWLINE(" id='Temporary' name='"+ HtmlVars(MailType,HtmlFieldID)+"' value='Temporary'  checked /> Temporary")
+ ELSE
+  HTMLVIEWLINE(" id='Temporary' name='"+ HtmlVars(MailType,HtmlFieldID)+"' value='Temporary'  /> Temporary")
+ HTMLVIEWLINE("</td><td class='bordered leftbottom'>")
+ mailrecordfound=FALSE
+ FOR EACH NAME WITH NAME:SSN=HtmlVars(RequesterSSN,HtmlFieldValue) AND (NAME:TYPE=2 OR NAME:TYPE=3) AND
+                    (NAME:EXPIRATIONDATE='--/--/--' OR NAME:EXPIRATIONDATE>SYSTEMDATE)
+ DO 
+      mailrecordfound=TRUE
+ END
+ IF mailrecordfound=FALSE and value( HtmlVars(RequesterNameType,HtmlFieldValue)) = 0 THEN
+ DO
+  [POPUPMESSAGE(0,HtmlVars(CreateMail,HtmlFieldValue))]
+   HTMLVIEWLINE("<input type='hidden' name='CreateMail' id='CreateMail' value='N' >")
+   HtmlTxtFieldName=CreateMail
+   CALL TekProCreateCheckBox
+ END
+ 
+ HTMLVIEWLINE("</td></tr>")
+ 
+ HTMLVIEWLINE("<tr><td class='bordered righttop'>")
+ HtmlTxtFieldName=EffectiveDate
+ CalendarMinDate="-1"
+ CalendarMaxDate="7300"
+ IF HtmlVars(MailType,HtmlFieldValue)="Permanent" OR HtmlVars(MailType,HtmlFieldValue)="" THEN
+  HtmlFieldDisabled=FALSE
+ IF HtmlVars(MailType,HtmlFieldValue)="Seasonal" THEN HtmlFieldDisabled=FALSE
+ IF HtmlVars(MailType,HtmlFieldValue)="Temporary" THEN DO 
+  HtmlFieldDisabled=TRUE
+  HtmlVars(EffectiveDate,HtmlFieldValue)=""
+ END
+ CALL TekProGetCalendarMinAndMax
+ CALL TekProCreateCalendarField
+ HTMLVIEWLINE("</td><td class='bordered leftrighttop'>")
+ HtmlTxtFieldName=ExpirationDate
+ CalendarMinDate="-1"
+ CalendarMaxDate="7300"
+ IF HtmlVars(MailType,HtmlFieldValue)="Permanent" or HtmlVars(MailType,HtmlFieldValue)="" THEN DO 
+  HtmlFieldDisabled=TRUE 
+  HtmlVars(ExpirationDate,HtmlFieldValue)=""
+  END
+ IF HtmlVars(MailType,HtmlFieldValue)="Seasonal" THEN HtmlFieldDisabled=FALSE
+ IF HtmlVars(MailType,HtmlFieldValue)="Temporary" THEN HtmlFieldDisabled=FALSE
+ CALL TekProGetCalendarMinAndMax
+ CALL TekProCreateCalendarField
+ HTMLVIEWLINE("</td><td class='bordered lefttop'></td></tr>")
+ 
+ HTMLVIEWLINE("<tr><td colspan='3'>")
+  HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=Exceptions2
+ CALL TekProCreateHiddenField
+ HtmlVars(Exceptions,HtmlFieldValue) = HtmlVars(Exceptions,HtmlFieldValue) + HtmlVars(Exceptions2,HtmlFieldValue)
+ HtmlTxtFieldName=Exceptions 
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td></tr>")
+ 
+ HTMLVIEWLINE("</table><br>")
+
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Account</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>ID</b></td>")
+  HTMLVIEWLINE("<td class='StepBorderOn'><b>Name Type</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Street</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Extra Address</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>City</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>State</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Zip</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Effective Date</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Expiration Date</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'>")
+ HTMLVIEWLINE("<a href='#' class='btn txt-medium' ")
+ IF SelectAllFlag=TRUE THEN
+  HTMLVIEWLINE("onclick="+Q+"UpdateListItem('DeselectAll','" +TmpRec+ "');return false;"+Q+" >Deselect All</a>")
+ ELSE
+  HTMLVIEWLINE("onclick="+Q+"UpdateListItem('SelectAll','" +TmpRec+ "');return false;"+Q+" >Select All</a>")
+ HTMLVIEWLINE("</td></tr>")
+
+ CALL displayNameData
+
+ HTMLVIEWLINE("<tr><td colspan='10' ><div class='divider' ></div></td></tr>")
+ HTMLVIEWLINE("</table>")
+ WebBtn(1)="BACK~1"
+ WebBtn(2)="CLOSE~2"
+ WebBtn(3)="NEXT~3"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ [CALL TekProWebAcctOverview]
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+  
+ IF WebSubmitBtn=REFRESHFORM THEN
+  DO
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="Add" THEN CALL AddListItem
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="Remove" THEN CALL RemoveListItem
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="SelectAll" THEN CALL SelectAllListItem
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="DeselectAll" THEN CALL ClearListItemArray
+   
+   HtmlVars(Exceptions2,HtmlFieldValue)=segment(HtmlVars(Exceptions,HtmlFieldValue),67,length(HtmlVars(Exceptions,HtmlFieldValue)))
+   HtmlVars(Exceptions,HtmlFieldValue)=segment(HtmlVars(Exceptions,HtmlFieldValue),1,66)
+  END[WebSubmitBtn=REFRESHFORM]
+ IF WebSubmitBtn=NEXT THEN
+  DO
+    
+    CALL GetListItemCounter
+
+   if mailrecordfound=true then do
+     IF ListItemCounter<1 THEN do
+     POPUPMESSAGE(0,"Please, select at least one account from the list to continue")
+     WebSubmitBtn=REFRESHFORM 
+     end
+   end
+   else do
+      if HtmlVars(CreateMail,HtmlFieldValue) <> "Y" and ListItemCounter<1 THEN do
+         POPUPMESSAGE(0,"To continue, please select at least one account or check create mail option.")
+         WebSubmitBtn=REFRESHFORM 
+      end
+   end
+   
+     
+    CALL AddAccountList
+ 
+ 
+    HtmlTxtFieldName=NewStreet
+    CALL TekProValRequiredField
+    HtmlTxtFieldName=NewCity
+    CALL TekProValRequiredField
+    HtmlTxtFieldName=NewState
+    CALL TekProValRequiredField
+    HtmlTxtFieldName=NewZip
+    CALL TekProValRequiredField
+   IF HtmlVars(InPersonRequestFlag,HtmlFieldValue)="N" THEN  
+   DO
+    HtmlTxtFieldName=NewEmail
+    CALL TekProValRequiredField
+   END
+   
+   If value( HtmlVars(RequesterNameType,HtmlFieldValue)) = 0 Then [Primary Member]
+   do
+     call FindPrimaryAccountRecord
+     If accountRecordFound = TRUE Then
+     do
+      IF CharacterSearch(lowercase(HtmlVars(NewStreet,HtmlFieldValue)),"po box" ) > 0 OR
+      CharacterSearch(lowercase(HtmlVars(NewStreet,HtmlFieldValue)),"p.o. box" ) > 0 Then
+      do
+        popupmessage(1,"Primary address on the account cannot be changed to a P.O. BOX.")
+        WebSubmitBtn=REFRESHFORM 
+      end
+     end
+   end
+   
+   CALL FindMailingRecord
+   
+  IF mailrecordfound=TRUE Or HtmlVars(CreateMail,HtmlFieldValue) = "Y" THEN
+  DO
+   
+   IF HtmlVars(EffectiveDate,HtmlFieldValue) <> "" AND HtmlVars(EffectiveDate,HtmlFieldValue) <> "--/--/--" THEN
+   DO
+     IF DATEVALUE(HtmlVars(EffectiveDate,HtmlFieldValue))< SYSTEMDATE THEN
+     DO
+       popupmessage(1,"Effective date cannot be in the past.")
+       WebSubmitBtn=REFRESHFORM 
+     END
+   END
+     
+   IF HtmlVars(MailType,HtmlFieldValue) = "Seasonal" AND
+   ( HtmlVars(EffectiveDate,HtmlFieldValue) = "" OR HtmlVars(EffectiveDate,HtmlFieldValue) = "--/--/--"  OR
+    HtmlVars(ExpirationDate,HtmlFieldValue) = "" OR HtmlVars(ExpirationDate,HtmlFieldValue) = "--/--/--" )THEN
+   DO
+       popupmessage(1,"Effective date and Expiration date cannot be blank.")
+       WebSubmitBtn=REFRESHFORM 
+   END
+   
+   IF HtmlVars(MailType,HtmlFieldValue) = "Seasonal" AND
+    ( DATEVALUE(HtmlVars(EffectiveDate,HtmlFieldValue))> DATEVALUE (HtmlVars(ExpirationDate,HtmlFieldValue) )) THEN
+    DO
+       popupmessage(1,"Expiration date cannot be before Effective date." )
+       WebSubmitBtn=REFRESHFORM 
+    END
+   
+   IF HtmlVars(MailType,HtmlFieldValue) = "Temporary" AND
+      (HtmlVars(ExpirationDate,HtmlFieldValue) = "" OR HtmlVars(ExpirationDate,HtmlFieldValue) = "--/--/--" ) THEN
+   DO
+       popupmessage(1,"Expiration date cannot be blank.")
+       WebSubmitBtn=REFRESHFORM 
+   END
+
+   IF (HtmlVars(ExpirationDate,HtmlFieldValue) = "" or HtmlVars(ExpirationDate,HtmlFieldValue) ="--/--/--") THEN
+   DO
+     HtmlVars(SeasonOrTemp,HtmlFieldValue) = "" [Permanet]
+     HtmlVars(ExpirationDate,HtmlFieldValue)=""
+     HtmlVars(MailOverride,HtmlFieldValue)="1"
+     if  HtmlVars(EffectiveDate,HtmlFieldValue)= "" Or HtmlVars(EffectiveDate,HtmlFieldValue) ="--/--/--"  THEN 
+      HtmlVars(EffectiveDate,HtmlFieldValue)= FORMAT("99/99/99",SYSTEMDATE)
+     
+   END
+   ELSE IF (HtmlVars(ExpirationDate,HtmlFieldValue) <>"" OR HtmlVars(ExpirationDate,htmlFieldValue)<> "--/--/--" ) AND 
+   (HtmlVars(EffectiveDate,HtmlFieldValue) ="" OR HtmlVars(EffectiveDate,HtmlFieldValue) = "--/--/--" OR
+    HtmlVars(EffectiveDate,HtmlFieldValue) =FORMAT("99/99/99",SYSTEMDATE) )THEN
+   DO
+     HtmlVars(SeasonOrTemp,HtmlFieldValue) = "Temporary"
+     HtmlVars(MailOverride,HtmlFieldValue)="1"
+     IF HtmlVars(EffectiveDate,HtmlFieldValue) ="" OR HtmlVars(EffectiveDate,HtmlFieldValue) = "--/--/--" THEN
+      HtmlVars(EffectiveDate,HtmlFieldValue) =""
+   END
+   ELSE IF (HtmlVars(EffectiveDate,HtmlFieldValue) <> "" OR HtmlVars(EffectiveDate,HtmlFieldValue) <> "--/--/--")AND 
+           (HtmlVars(ExpirationDate,HtmlFieldValue)<>"" OR HtmlVars(ExpirationDate,htmlFieldValue)<> "--/--/--") THEN
+    DO
+      HtmlVars(SeasonOrTemp,HtmlFieldValue) = "Seasonal"
+      HtmlVars(MailOverride,HtmlFieldValue)="1"
+      HtmlVars(UserChar1,HtmlFieldValue)="R"
+      HtmlVars(UserChar2,HtmlFieldValue)= SEGMENT(HtmlVars(EffectiveDate,HtmlFieldValue),1,2) + SEGMENT( HtmlVars(EffectiveDate,HtmlFieldValue),4,5)
+      HtmlVars(UserChar3,HtmlFieldValue)=SEGMENT(HtmlVars(ExpirationDate,HtmlFieldValue),1,2) + SEGMENT( HtmlVars(ExpirationDate,HtmlFieldValue),4,5)
+
+    END
+   END
+   ELSE
+   DO
+     HtmlVars(SeasonOrTemp,HtmlFieldValue)  = "" [Permanet]
+     HtmlVars(ExpirationDate,HtmlFieldValue)= ""
+     HtmlVars(EffectiveDate,HtmlFieldValue) = ""
+   END
+   
+   HtmlVars(Exceptions2,HtmlFieldValue)=segment(HtmlVars(Exceptions,HtmlFieldValue),67,length(HtmlVars(Exceptions,HtmlFieldValue)))
+   HtmlVars(Exceptions,HtmlFieldValue) = segment(HtmlVars(Exceptions,HtmlFieldValue),1,66)
+  
+  END[WebSubmitBtn=NEXT]
+END[GetNewAddress]
+
+PROCEDURE getNonAccountHolder
+CurrentStep=3
+ ACTIONPOST = "~NoClose"
+ CALL TekProWebHeader
+ CALL CustomJS
+ CALL TekProWebWSteps
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr><td colspan='3' >")
+ 
+ HtmlTxtFieldName=RequesterLocator
+ HtmlVars(RequesterLocator,HtmlFieldFunction)=" onchange=" +Q+ "SubmitForm("+REFRESHFORM+");" +Q +" "
+ TEMPTEXT1=HtmlVars(RequesterLocator,HtmlFieldLabel)
+ HtmlVars(RequesterLocator,HtmlFieldLabel)="Non-Account Holder"
+ CALL TekProCreateSelField
+ CALL TekProCreateSelectedOption
+ CALL getNonAccountNames
+
+ HtmlVars(RequesterLocator,HtmlFieldFunction)=""
+ HtmlVars(RequesterLocator,HtmlFieldLabel)=TEMPTEXT1
+ HTMLVIEWLINE("</select><br/><br/>") 
+ HTMLVIEWLINE("</td></tr>")
+
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=NewNameFirst
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td>")
+ HtmlTxtFieldName=NewNameLast
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td>")
+ HtmlTxtFieldName=NewNameMiddle
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td></tr>")
+
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=NewPrefContact 
+ CALL TekProCreateSelField
+ CALL TekProCreateContactTypeOptions
+ HTMLVIEWLINE("</select>")
+ HTMLVIEWLINE("</td><td>")
+ HtmlTxtFieldName=NewHomePhone
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td>")
+ HtmlTxtFieldName=NewMobilePhone
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td></tr>")
+
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=NewWorkPhone
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td colspan='2' >")
+ HtmlTxtFieldName=NewWorkPhExt
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td></tr>")
+
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=NewEmail
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td><td colspan='2' >")
+ HtmlTxtFieldName=NewAltEmail
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td></tr>")
+
+ HTMLVIEWLINE("</table>")
+
+ WebBtn(1)="BACK~1"
+ WebBtn(2)="CLOSE~2"
+ WebBtn(3)="SAVE~5"
+ WebBtn(4)="END~2"
+
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+
+ IF WebSubmitBtn=REFRESHFORM THEN
+  DO
+    CALL TekSetNameToRequester
+    CALL setNonAccountFields
+  END[WebSubmitBtn=REFRESHFORM]
+END[getNonAccountHolder]
+
+PROCEDURE GetNewContact
+ CurrentStep=3
+ ACTIONPOST = "~NoClose"
+ CALL TekProWebHeader
+ CALL CustomJS
+ CALL TekProWebWSteps
+ HTMLVIEWLINE("<input type='hidden' name='" +HtmlVars(ListItem,HtmlFieldID)+"' id='" +HtmlVars(ListItem,HtmlFieldID)+"' value='' >")
+ HTMLVIEWLINE("<input type='hidden' name='" +HtmlVars(ListItemAction,HtmlFieldID)+"' id='" +HtmlVars(ListItemAction,HtmlFieldID)+"' value='' >")
+
+ HTMLVIEWLINE("<br/>")
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=RequesterLongName
+ CALL TekProCreateLabelField
+ HTMLVIEWLINE("<br/>")
+ HTMLVIEWLINE("Home: "+HtmlVars(RequesterHomePhone,HtmlFieldValue)+"<br/>")
+  IF HtmlVars(RequesterWorkPhExt,HtmlFieldValue)<>"" 
+  THEN HTMLVIEWLINE("Work: "+HtmlVars(RequesterWorkPhone,HtmlFieldValue)+" ext "+HtmlVars(RequesterWorkPhExt,HtmlFieldValue)+"<br/>")
+  ELSE 
+  HTMLVIEWLINE("Work: "+HtmlVars(RequesterWorkPhone,HtmlFieldValue)+"<br/>")
+  HTMLVIEWLINE("Mobile: "+HtmlVars(RequesterMobilePhone,HtmlFieldValue)+"<br/>")
+  HTMLVIEWLINE(HtmlVars(RequesterEmail,HtmlFieldValue)+"<br/>")
+  HTMLVIEWLINE(HtmlVars(RequesterAltEmail,HtmlFieldValue)+"<br/>")
+  HTMLVIEWLINE("Preferred Contact: "+HtmlVars(RequesterPrefContact,HtmlFieldValue)+"<br/>")
+ HTMLVIEWLINE("</td><td>")
+ HtmlTxtFieldName=NewHomePhone
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewWorkPhone
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewEmail
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewPrefContact 
+ CALL TekProCreateSelField
+ CALL TekProCreateContactTypeOptions
+ HTMLVIEWLINE("</select>")
+
+ HTMLVIEWLINE("</td><td valign='top'>")
+
+ HtmlTxtFieldName=NewMobilePhone
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewWorkPhExt
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewAltEmail
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("</td></tr>")
+
+ HTMLVIEWLINE("<tr><td colspan='3' style='padding: 15px 0px' ><b>Update ID Data</td></tr>")
+
+ HTMLVIEWLINE("<tr><td>")
+ HtmlTxtFieldName=NewIDType1
+ CALL TekProCreateSelField
+ CALL TekProCreateIDTypeOptions
+ HTMLVIEWLINE("</select>")
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewIDDesc1
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewIDNumber1
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ [HtmlTxtFieldName=NewIDIssue1
+ CALL TekProCreateTxtField]
+ HtmlTxtFieldName=NewIDIssue1
+ CalendarMinDate="-3650"
+ CalendarMaxDate="0"
+ CALL TekProGetCalendarMinAndMax
+ CALL TekProCreateCalendarField
+ HTMLVIEWLINE("<br/>")
+[
+ HtmlTxtFieldName=NewIDExp1
+ CALL TekProCreateTxtField
+]
+ HtmlTxtFieldName=NewIDExp1
+ CalendarMinDate="-1"
+ CalendarMaxDate="7300"
+ CALL TekProGetCalendarMinAndMax
+ CALL TekProCreateCalendarField
+
+ HTMLVIEWLINE("</td><td valign='top' colspan='2'>")
+ HtmlTxtFieldName=NewIDType2
+ CALL TekProCreateSelField
+ CALL TekProCreateIDTypeOptions
+ HTMLVIEWLINE("</select>")
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewIDDesc2
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewIDNumber2
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewIDIssue2
+ CalendarMinDate="-3650"
+ CalendarMaxDate="0"
+ CALL TekProGetCalendarMinAndMax
+ CALL TekProCreateCalendarField
+ [HtmlTxtFieldName=NewIDIssue2
+ CALL TekProCreateTxtField]
+ 
+ HTMLVIEWLINE("<br/>")
+ HtmlTxtFieldName=NewIDExp2
+ CalendarMinDate="-1"
+ CalendarMaxDate="7300"
+ CALL TekProGetCalendarMinAndMax
+ CALL TekProCreateCalendarField
+ HTMLVIEWLINE("</td></tr>")
+ 
+ HTMLVIEWLINE("</table>")
+
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Account</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>ID</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Home Phone</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Work Phone</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Work Ext</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Mobile Phone</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Email Address</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Alt Email</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'>")
+ HTMLVIEWLINE("<a href='#' class='btn txt-medium' ")
+ IF SelectAllFlag=TRUE THEN
+  HTMLVIEWLINE("onclick="+Q+"UpdateListItem('DeselectAll','" +TmpRec+ "');return false;"+Q+" >Deselect All</a>")
+ ELSE
+  HTMLVIEWLINE("onclick="+Q+"UpdateListItem('SelectAll','" +TmpRec+ "');return false;"+Q+" >Select All</a>")
+ HTMLVIEWLINE("</td></tr>")
+
+ CALL displayNameData
+
+ HTMLVIEWLINE("<tr><td colspan='8' ><div class='divider' ></div></td></tr>")
+ HTMLVIEWLINE("</table>")
+ WebBtn(1)="BACK~1"
+ WebBtn(2)="CLOSE~2"
+ WebBtn(3)="NEXT~3"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ [CALL TekProWebAcctOverview]
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+ 
+
+ IF WebSubmitBtn=REFRESHFORM THEN
+  DO
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="Add" THEN CALL AddListItem
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="Remove" THEN CALL RemoveListItem
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="SelectAll" THEN CALL SelectAllListItem
+   IF HtmlVars(ListItemAction,HtmlFieldValue)="DeselectAll" THEN CALL ClearListItemArray
+  END[WebSubmitBtn=REFRESHFORM]
+ IF WebSubmitBtn=NEXT THEN
+  DO
+    CALL GetListItemCounter
+    IF ListItemCounter<1 THEN 
+     DO
+      POPUPMESSAGE(0,"Select at least one record to continue")
+      WebSubmitBtn=REFRESHFORM 
+     END
+     
+    IF HtmlVars(NewHomePhone,HtmlFieldValue) = "" AND HtmlVars(NewWorkPhone,HtmlFieldValue) =""
+     AND HtmlVars(NewMobilePhone,HtmlFieldValue) = "" AND VALUE(segment(HtmlVars(NewPrefContact,HtmlFieldValue),1,2) ) = 0 THEN
+    DO
+      POPUPMESSAGE(0,"At least one phone number is required")
+      WebSubmitBtn=REFRESHFORM 
+    END
+    ELSE IF VALUE(segment(HtmlVars(NewPrefContact,HtmlFieldValue),1,2) ) = 1 [home phone] THEN
+    DO
+      HtmlTxtFieldName=NewHomePhone
+      CALL TekProValRequiredField
+    END
+    ELSE IF VALUE(segment(HtmlVars(NewPrefContact,HtmlFieldValue),1,2) ) = 2 [work phone] THEN
+    DO
+      HtmlTxtFieldName=NewWorkPhone
+      CALL TekProValRequiredField
+    END
+    ELSE IF VALUE(segment(HtmlVars(NewPrefContact,HtmlFieldValue),1,2) ) = 3 [mobile phone] THEN
+    DO
+      HtmlTxtFieldName=NewMobilePhone
+      CALL TekProValRequiredField
+    END
+    
+   IF DATEVALUE(HtmlVars(NewIDIssue1,HtmlFieldValue))> DATEVALUE(HtmlVars(NewIDExp1,HtmlFieldValue)) OR
+      DATEVALUE(HtmlVars(NewIDIssue2,HtmlFieldValue))> DATEVALUE(HtmlVars(NewIDExp2,HtmlFieldValue)) THEN
+     DO popupmessage(0,"Issue Date cannot be after Expiration Date")
+       WebSubmitBtn=REFRESHFORM 
+     END
+  END[WebSubmitBtn=NEXT]
+END[GetNewContact]
+
+PROCEDURE DisplayConfirmation
+CurrentStep = 6
+ ACTIONPOST = "~NoClose"
+ CALL TekProWebHeader
+ CALL TekProWebWSteps
+ CALL TekProPrintConfirmation
+ HTMLVIEWLINE("<table width='100%' cellspacing='0' cellpadding='0' border='0' >")
+ HTMLVIEWLINE("<tr><td style='padding:20px' >")
+ HTMLVIEWLINE("<b class='txt-xlarge' >Do you want to make more changes?</b><br/><br/>")
+ HTMLVIEWLINE("<a href='#' class='btn txt-large' onclick='SubmitForm("+NEXT+");return false;' >YES</a>")
+ HTMLVIEWLINE("<a href='#' class='btn txt-large' onclick='SubmitForm("+BACK+");return false;' >NO</a>")
+ HTMLVIEWLINE("</td></tr>")
+ HTMLVIEWLINE("</table>")
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+END[DisplayConfirmation]
+
+
+PROCEDURE confirmMemberSignedForms
+ ACTIONPOST= "~NoClose"
+ CALL TekProWebHeader
+ CALL TekProWebWSteps
+ HTMLVIEWLINE("<table width='100%' cellspacing='0' cellpadding='0' border='0' >")
+ HTMLVIEWLINE("<tr><td style='padding:20px' >")
+ HTMLVIEWLINE("<b class='txt-xlarge' >Did the member sign the forms?</b><br/><br/>")
+ HTMLVIEWLINE("<a href='#' class='btn txt-large' onclick='SubmitForm("+NEXT+");return false;' >YES</a>")
+ HTMLVIEWLINE("<a href='#' class='btn txt-large' onclick='SubmitForm("+BACK+");return false;' >NO</a>")
+ HTMLVIEWLINE("</td></tr>")
+ HTMLVIEWLINE("</table>")
+ WebBtn(1)="BACK~1"
+ WebBtn(2)="CLOSE~2"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ [CALL TekProWebAcctOverview]
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+END[confirmMemberSignedForms]
+
+PROCEDURE accountVerification
+ CurrentStep = 4
+ ACTIONPOST= "~NoClose"
+ CALL TekProWebHeader
+ CALL TekProWebWSteps
+ HTMLVIEWLINE("<table width='100%' cellspacing='0' cellpadding='0' border='0' >")
+ HTMLVIEWLINE("<tr><td><br>")
+ HTMLVIEWLINE("Please confirm that the address changes you requested are correct.")
+ HTMLVIEWLINE(" Click Confirm or click Back to make changes.<br/><br/>")
+ HTMLVIEWLINE("</td></tr>")
+ HTMLVIEWLINE("<tr><td colspan='2'>")
+ IF ListItemCounter<1 THEN
+  HTMLVIEWLINE("<b>" +"New mail address"+ "</b><br/>")
+ ELSE
+  HTMLVIEWLINE("<b>" +"New address"+ "</b><br/>")
+ HTMLVIEWLINE("</td></tr>")
+ HTMLVIEWLINE("</table><br>")
+ 
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Account</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Street</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Extra Address</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>City</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>State</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Zip</b></td>")
+ IF mailRecordfound=TRUE Or HtmlVars(CreateMail,HtmlFieldValue) = "Y" THEN
+ DO
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Mail Effective Date</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Mail Expiration Date</b></td>")
+ END
+ HTMLVIEWLINE("</tr>")
+ 
+ ZebraColor="white"
+ HTMLVIEWLINE("<tr style='background-color: " +ZebraColor+"'; >")
+ HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(HtmlAccountNumber,HtmlFieldValue)+ "</td>")
+ IF accountRecordFound=FALSE THEN
+ DO  
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(MailingStreet,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(MailingExtraAddress,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(MailingCity,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(MailingState,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(MailingZip,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(EffectiveDate,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(ExpirationDate,HtmlFieldValue)+ "</td>")
+ END
+ ELSE
+ DO
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(NewStreet,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(NewExtraAddress,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(NewCity,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(NewState,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(NewZip,HtmlFieldValue)+ "</td>")
+  IF mailrecordfound=TRUE Or HtmlVars(CreateMail,HtmlFieldValue) = "Y" THEN
+  DO
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(EffectiveDate,HtmlFieldValue)+ "</td>")
+   HTMLVIEWLINE("<td class='WhiteBorderTop tblRowPadding' >" +HtmlVars(ExpirationDate,HtmlFieldValue)+ "</td>")
+  END
+ END
+ HTMLVIEWLINE("</tr>")
+ HTMLVIEWLINE("</table><br/><br/>")
+ 
+ IF ListItemCounter>0 THEN
+ DO
+ HTMLVIEWLINE("<b>" +"Account list"+ "</b><br/><br/>")
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Account</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>ID</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Name Type</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Street</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Extra Address</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>City</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>State</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Zip</b></td>")
+ IF mailrecordfound=TRUE Or HtmlVars(CreateMail,HtmlFieldValue) = "Y" THEN
+ DO
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Effective Date</b></td>")
+ HTMLVIEWLINE("<td class='StepBorderOn'><b>Expiration Date</b></td>")
+ END
+ HTMLVIEWLINE("</tr>")
+ 
+ CALL GetAccountList
+ 
+ HTMLVIEWLINE("</table>")
+ END
+ WebBtn(1)="BACK~1"
+ WebBtn(2)="CLOSE~2"
+ WebBtn(3)="CONFIRM~3"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ [CALL TekProWebAcctOverview]
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+END[confirmMemberSignedForms]
+
+PROCEDURE confirmIdentityVerification
+ CurrentStep = 4
+ ACTIONPOST          = ""
+ CALL TekProWebHeader
+ CALL CustomJS
+ CALL TekProWebWSteps
+ HTMLVIEWLINE("<table width='100%' cellspacing='0' cellpadding='0' border='0' >")
+ HTMLVIEWLINE("<tr><td style='padding:20px' >")
+ HTMLVIEWLINE("<b class='txt-xlarge' >How was the Member's ID verified?</b><br/><br/>")
+ [HTMLVIEWLINE("<b>" +HtmlVars(IdentVerMethod,HtmlFieldLabel) + "</b><br/>")]
+
+ HTMLVIEWLINE("<input type='radio'")
+ IF HtmlVars(IdentVerMethod,HtmlFieldFunction)<>"" THEN  HTMLVIEWLINE(" "+HtmlVars(IdentVerMethod,HtmlFieldFunction))
+ HTMLVIEWLINE(" id='License' name='"+HtmlVars(IdentVerMethod,HtmlFieldID)+"' value='License' checked /> Driver's License <br/>")
+ 
+ HTMLVIEWLINE("<input type='radio'")
+ IF HtmlVars(IdentVerMethod,HtmlFieldFunction)<>"" THEN  HTMLVIEWLINE(" "+HtmlVars(IdentVerMethod,HtmlFieldFunction))
+ HTMLVIEWLINE(" id='Signature' name='"+HtmlVars(IdentVerMethod,HtmlFieldID)+"' value='Signature'/> Signature on File <br/>")
+ 
+ HTMLVIEWLINE("<input type='radio'")
+ IF HtmlVars(IdentVerMethod,HtmlFieldFunction)<>"" THEN  HTMLVIEWLINE(" "+HtmlVars(IdentVerMethod,HtmlFieldFunction))
+ HTMLVIEWLINE(" id='Other' name='"+HtmlVars(IdentVerMethod,HtmlFieldID)+"' value='Other'  />")
+ 
+ HtmlTxtFieldName=OtherIdentMethod
+ HtmlFieldDisabled=TRUE
+ HtmlVars(OtherIdentMethod,HtmlFieldValue)="" 
+ CALL TekProCreateTxtField
+ HTMLVIEWLINE("<br/>")
+ HTMLVIEWLINE("</td></tr>")
+ HTMLVIEWLINE("<tr><td><div class='divider' ></div></td></tr>")
+ HTMLVIEWLINE("</table>")
+ WebBtn(1)="BACK~1"
+ WebBtn(2)="CLOSE~2"
+ WebBtn(3)="NEXT~3"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ [CALL TekProWebAcctOverview]
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+
+ IF WebSubmitBtn=NEXT THEN
+  DO
+    IF HtmlVars(IdentVerMethod,HtmlFieldValue) ="Other" THEN DO
+     HtmlTxtFieldName=OtherIdentMethod
+     CALL TekProValRequiredField 
+    END
+  END[WebSubmitBtn=NEXT]
+END[confirmMemberSignedForms]
+
+PROCEDURE AddressUpdateNotAllow
+ ACTIONPOST          = "~NoClose"
+ CALL TekProWebHeader
+ CALL TekProWebBody
+ HTMLVIEWLINE("<br/>")
+ HTMLVIEWLINE("<table width='100%' cellpadding='0' cellspacing='0' border='0' >")
+ HTMLVIEWLINE("<tr><td class='DivTitle' >ADDRESS UPDATE NOT ALLOWED</td></tr>")
+ HTMLVIEWLINE("<tr><td><b>" +AddressUpdateNotAllowTxt+ "</b></td></tr>")
+ HTMLVIEWLINE("<tr><td><div class='divider' ></div></td></tr>")
+ HTMLVIEWLINE("</table>")
+ WebBtn(1)="CLOSE~2"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+END[AddressUpdateNotAllow]
+
+PROCEDURE SendPowerFrame
+ CurrentStep = 5
+If value( HtmlVars(RequesterNameType,HtmlFieldValue)) = 0 then
+ HtmlVars(Signer1,HtmlFieldValue) = "1"
+else
+ HtmlVars(Signer2,HtmlFieldValue) = "1"
+CALL TekProCreateTempFile
+PDFNAME="PDF_ADDRESS_CHG_CONF"                        [form/workflow name]
+LETTERNAME=TekTempFileName
+PDFHOST=SYSHOSTNAME+".jha-sys.com" [fqdn of PF/Symitar App server]
+PDFPORT="42"+FORMAT("999",SYSSYMDIRECTORY) [PowerFrame port, i.e. 42XXX]
+call PowerFrame
+CALL TekProReadTempFileData
+[CALL TekProDeleteTempFileData]
+end
+
+#INCLUDE "TEKAPP019.MAIN.PRO"
+#INCLUDE "TEKAPP019.ADDRESS.UPDATE.CU"
+#INCLUDE "TEKAPP019.MAIN.HTM"
+#INCLUDE "TEKAPP019.ADDRESS.UPDATE.PRO"
+#INCLUDE "TEKAPP019.DOCUSIGNREST.PRO"
+#INCLUDE "TEKAPP019.POWERFRAME.PRO"
+
+

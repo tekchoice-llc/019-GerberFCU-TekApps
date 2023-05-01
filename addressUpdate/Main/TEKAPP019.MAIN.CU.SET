@@ -1,0 +1,119 @@
+#********************************************************************************]
+# LETTERFILE: TEKAPP019.MAIN.CU.SET
+# VERSION: 000
+# COPYRIGHT: TekChoice, LLC 2019 © 
+# 
+# TekApp:        000 Global Settings File 
+#
+# Description:   File to SET Credit Union TekApp Variables
+#
+# Programmed:    TekChoice LLC
+#
+# Modified:      05-16-2022 Original Source
+#
+#********************************************************************************]
+#
+# *** CU Name *** 
+ TekCUName=Gerber FCU
+ ProductionSYM=000
+
+ defaultOperatorPhone=2109960563
+ defaultOperatorEmail=Ricardo.Serratos@tekchoice.com
+
+# *** START DocuSign ***
+ DocuSignRetrievePath=C:\\TekChoice\\DocuSign-RetrieveEnvStatus\\
+ TekDocuSignLogFile=TEKAPP019.DOCUSIGN.LOG
+# APIDocuSignURL=https://g1tiw1qrsb.execute-api.us-east-1.amazonaws.com/docu
+# APIDocuSignURLTest=https://g1tiw1qrsb.execute-api.us-east-1.amazonaws.com/docu
+ APIDocuSignURL=https://vpvcni9456.execute-api.us-east-1.amazonaws.com/dev
+ APIDocuSignURLTest=https://vpvcni9456.execute-api.us-east-1.amazonaws.com/dev
+ DocuTemplatePath=C:\\inetpub\\wwwroot\\TekeSign
+# *** END DocuSign ***
+
+# *** Brand Colors *** 
+ TekCUBarBkg=#003e74             
+ TekCUProgressBarActive=#D6492A  
+ TekCUBtnHover=#003e74
+ TekCUBtn=#ea7125                
+ TekCUProgressBarBkg=#f1f1f1     
+ TekCUProgressBar=#AEB4AC        
+ TekColorWarning=#FE0000      
+ TekColorComment=#1CB8F3        
+ TekColorGo=#1CB8F3 
+#********************************************************************************** 
+#   HTML File Path for Tek App Graphics & JavaScript files
+#   Example(s)
+#     HtmlFilePath="<http://www.mywebsite.com/>"
+#     HtmlFilePath="<file://///server/path/>"
+#*********************************************************************************** ] 
+# HtmlFilePath=http://DocuSign-LB-1099717316.us-east-1.elb.amazonaws.com/img/
+ HtmlFilePath=https://d1gubeflodxyuh.cloudfront.net/img/
+#
+# *** CU Warnings *** 
+ WARNINGDESC(1)=No Batch Posting Allowed
+ WARNINGDESC(2)=Delinquent Loan
+ WARNINGDESC(3)=New Account
+ WARNINGDESC(4)=Account Open less than 6 mos
+ WARNINGDESC(5)=Excessive NSF Activity
+ WARNINGDESC(6)=Merger-New Signature Card Required
+ WARNINGDESC(7)=Bankruptcy
+ WARNINGDESC(8)=Bankruptcy Restricted
+ WARNINGDESC(9)=Fraud
+ WARNINGDESC(10)=Restricted Guardian
+ WARNINGDESC(11)=Code Word Required
+ WARNINGDESC(12)=Restrict ATM PIN Transactions
+ WARNINGDESC(13)=Restrict POS Transactions
+ WARNINGDESC(14)=Restrict Debit Signature Transactions
+ WARNINGDESC(15)=Restrict ATM Deposits
+ WARNINGDESC(16)=DQ Grace Days Override
+ WARNINGDESC(17)=ATM Deposit Hold Override
+ WARNINGDESC(18)=Share Balance Under $5.00
+ WARNINGDESC(19)=Bad Address-Update
+ WARNINGDESC(20)=Inactive Account
+ WARNINGDESC(21)=Hold check deposits for 10 business days
+ WARNINGDESC(22)=No Check Cashing
+ WARNINGDESC(23)=No Withdrawals
+ WARNINGDESC(24)=Charge Off
+ WARNINGDESC(26)=Repossession Contact Account Services
+ WARNINGDESC(27)=Deceased - Primary
+ WARNINGDESC(28)=Need Updated Signature Card
+ WARNINGDESC(29)=GTC Account Hold - See Comment
+ WARNINGDESC(30)=Stolen Account Information
+ WARNINGDESC(31)=Power of Attorney on Account
+ WARNINGDESC(32)=Kiting Suspect
+ WARNINGDESC(33)=Fraud charge off
+ WARNINGDESC(35)=Delinquent FICS Loan
+ WARNINGDESC(36)=Delinquent FIS Loan
+ WARNINGDESC(37)=Backup Withholding
+ WARNINGDESC(40)=No Phone Numbers-Update
+ WARNINGDESC(41)=Deceased - Joint
+ WARNINGDESC(42)=CPI-Update Insurance Information
+ WARNINGDESC(43)=Courtesy Pay revoked
+ WARNINGDESC(44)=Title Work Needed/Missing Docs
+ WARNINGDESC(45)=Read Notes on Account Carefully
+ WARNINGDESC(46)=Excessive Return Deposit Items
+ WARNINGDESC(47)=Foreclosure
+ WARNINGDESC(48)=Paid Charge Off
+ WARNINGDESC(50)=Address Needs Review
+ WARNINGDESC(52)=Joint Member Deceased
+ WARNINGDESC(53)=CUNA Disability
+ WARNINGDESC(54)=Out for Repo
+ WARNINGDESC(55)=Do Not Release Title
+ WARNINGDESC(56)=OFAC
+ WARNINGDESC(57)=Trust Certificate Needed
+ WARNINGDESC(58)=Online Acct-collect photo and signature
+ WARNINGDESC(59)=Over limit FIS Loan
+ WARNINGDESC(60)=Online Account - do not redeem
+ WARNINGDESC(61)=Marketing Opt Out
+ WARNINGDESC(62)=Active Savings Opportunity
+ WARNINGDESC(63)=No Online Access Allowed
+ WARNINGDESC(64)=Email Update
+ WARNINGDESC(65)=Executor of Estate on File
+ WARNINGDESC(66)=Small Estate Affidavit on File
+ WARNINGDESC(67)=Previous Employee - Lifetime Benefits
+ WARNINGDESC(68)=Revoke Debit Card Rights
+ WARNINGDESC(70)=Shared Branching Not Allowed
+ WARNINGDESC(71)=Member Loyalty Survey
+ WARNINGDESC(72)=ACTIVE Credit Report on File
+ WARNINGDESC(73)=POA Expiration
+ WARNINGDESC(900)=Negative Balance

@@ -1,0 +1,88 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, 
+ documentation, or other materials made available by TekChoice, LLC, through 
+ this repository, you acknowledge that you have read, understand, and agree to 
+ be bound by the End User License Agreement (the "EULA") included in these 
+ downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME : TEKAPP019.DOCUSIGNREST.DEF
+
+ COPYRIGHT    : TekChoice, LLC 2021 © 
+
+ Sections     : DocuSign variable definition
+
+ Programmed   : TekChoice LLC
+
+ Modified     : 05-16-2022 Original Source
+********************************************************************************]
+
+ [DocuSign]
+ APIDocuSignURL = Character
+ APIDocuSignURLTest = Character
+ DocuSignAuthTypeTotalOptions=Number
+ DocuSignAuthTypeOption=Character ARRAY(4,2)
+ DocuSignEnvID=Character
+ DocuSignEnvStatus=Character
+ currentField = Number
+ PDFEndComma = Character
+ TekDocuSignLogFile=Character
+ 
+ envelopeDocuments= Character
+ envelopeSubject= Character
+ envelopeEmailBlurb= Character
+ envelopeIsMemberPresent=Character
+ 
+ PDFSigners=Character Array(20,4)
+ PDFSignerName = 0
+ PDFSignerEmail = 1
+ PDFSignerPhoneList = 2
+ PDFSignerAuthType = 3
+ PDFSignerFields = 4
+ PDFSignersMax = Number
+ 
+ PDFFields=Character Array(999,1)
+ PDFFieldName=0
+ PDFFieldValue=1
+ PDFFieldsMax = Number
+ 
+ [
+ DocuSignUrlApi=Character
+ DocuSignReturnUrl=Character
+ DocuSignReturnUrlStaff=Character
+ DocuSignAccountId=Character
+ DocuSignOauthBasePath=Character
+ DocuSignUserID=Character
+ DocuSignAud=Character
+ DocuSignRestIntegratorKey=Character
+ DocuLogPath=Character
+ DocuTemplatePath=Character
+ DocuSignUrlApiTest=Character
+ DocuSignReturnUrlTest=Character
+ DocuSignReturnUrlStaffTest=Character
+ DocuSignAccountIdTest=Character
+ DocuSignOauthBasePathTest=Character
+ DocuSignUserIDTest=Character
+ DocuSignAudTest=Character
+ DocuSignRestIntegratorKeyTest=Character
+ DocuLogPathTest=Character
+ DocuTemplatePathTest=Character
+ DocuSignExpireAfter=Character
+ DocuSignExpireWarn=Character
+ 
+ DocuSignRetrievePath=Character
+ DocuSignEmbeddedURL=Character
+ DocuSignEmbeddedURLTest=Character
+ DocuSignTimeZone=Character
+
+ ]
+ 
+ [ *** Need to SET at App Level ***]
+ HtmlDocuSignEmail=Number
+ HtmlDocuSignPhoneList=Number
+ HtmlDocuSignAuthType=Number
+ 
+ 
+ 
+

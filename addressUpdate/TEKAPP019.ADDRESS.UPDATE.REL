@@ -1,0 +1,76 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.ADDRESS.UPDATE.REL
+ VERSION: 001
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Version:       001   
+
+ Sections:      1. Base Variable Definition
+
+ Programmed:    TekChoice LLC
+
+ Modified:      05-16-2022 Original Source
+
+
+********************************************************************************]
+
+SUBROUTINE DEMAND WINDOWS
+STATELESS
+TARGET=ACCOUNT
+
+DEFINE
+ #INCLUDE "RD.GETDATA.DEF"
+ #INCLUDE "TEKAPP019.MAIN.DEF"
+ #INCLUDE "TEKAPP019.ADDRESS.UPDATE.DEF"
+ #INCLUDE "TEKAPP019.DOCUSIGNREST.DEF"
+END[DEFINE]
+
+SETUP
+ #INCLUDE "TEKAPP019.MAIN.SET"
+ #INCLUDE "TEKAPP019.ADDRESS.UPDATE.SET"
+END[SETUP]
+
+SELECT
+ NONE
+END[SELECT]
+
+PRINT TITLE="Update Address Rel"
+ CALL setCrediUnionVars
+ TekTempFileName=@ENVPARAMCHAR1
+ RecordNameLocator=@ENVPARAMCHAR2
+ RecordSHLNID=@ENVPARAMCHAR3
+ WHILELIMIT=1000000000
+ CALL TekProReadTempFileData
+ [CALL TekProDeleteTempFileData]
+
+ IF HtmlVars(MenuSel,HtmlFieldValue)="updateName" THEN CALL FMupdateName
+ IF HtmlVars(MenuSel,HtmlFieldValue)="GetNewAddress" THEN CALL FMGetNewAddress
+ IF HtmlVars(MenuSel,HtmlFieldValue)="GetNewContact" THEN CALL FMGetNewContact
+ 
+
+ IF @ENVPARAMCHAR4= "GetNewMailing" THEN
+ DO
+  CALL FMGetNewMailing
+ END
+ IF @ENVPARAMCHAR4= "GetNewEmail" THEN
+ DO 
+  Call UpdateRequesterEmail
+ END
+
+ @ENVPARAMCHAR1=FERROR
+ 
+END
+
+PROCEDURE TekProDisplayHtmlNameList
+END[TekProDisplayHtmlNameList]
+
+#INCLUDE "TEKAPP019.ADDRESS.UPDATE.PRO"
+#INCLUDE "TEKAPP019.MAIN.PRO"
+#INCLUDE "TEKAPP019.ADDRESS.UPDATE.CU"

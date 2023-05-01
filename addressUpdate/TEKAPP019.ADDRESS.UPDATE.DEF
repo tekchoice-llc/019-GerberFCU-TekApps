@@ -1,0 +1,197 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, documentation, or 
+ other materials made available by TekChoice, LLC, through this repository, you acknowledge
+ that you have read, understand, and agree to be bound by the End User License Agreement (the "EULA")
+ included in these downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME: TEKAPP019.ADDRESS.UPDATE.DEF
+ VERSION: 001
+ COPYRIGHT: TekChoice, LLC 2020 © 
+
+ Programmed:    TekChoice LLC
+
+ Modified:      15-16-2022 Original Source
+
+********************************************************************************]
+
+ menuSelection=Number
+
+
+[*** Other Vars ***]
+ updateListItemArray= CHARACTER ARRAY(99)
+ selectedMenu=CHARACTER ARRAY(100)
+ currentMenu=Number
+ GetNewContactPDF=Character
+ GetNewAddressPDF=Character
+ updateNamePDF=Character
+ getNonAccountHolderPDF=Character
+ NEWLOC=NUMBER
+ NONINDIVNAME=NUMBER
+ FoundTracking1Flag = Number
+ FoundTracking58Flag= Number
+ ProcessAccount     = CHARACTER ARRAY(99)
+ ProcessAccountFlag = Number
+ CreateCommentFlag  = Number
+ menuOptions        = CHARACTER(60) ARRAY(6)
+ maxMenuOptions     = Number
+ AddressUpdateNotAllowtxt=CHARACTER
+ DoAddressUpdateFlag=NUMBER
+ SelectAllFlag=NUMBER
+ btnCustomCSS=CHARACTER
+ ShLnIDList=CHARACTER ARRAY(99)
+ NAMESTREET=CHARACTER
+ NAMEEXTRAADDRESS=CHARACTER
+ NAMECITY=CHARACTER
+ NAMESTATE=CHARACTER
+ NAMEZIPCODE=CHARACTER
+ NAMEFIRST=CHARACTER
+ NAMELAST=CHARACTER
+ NAMEMIDDLE=CHARACTER
+ NAMEHOMEPHONE=CHARACTER
+ NAMEWORKPHONE=CHARACTER
+ NAMEWORKPHONEEXT=CHARACTER
+ NAMEMOBILEPHONE=CHARACTER 
+ NAMEEMAILADDRESS=CHARACTER
+ NAMEALTEMAIL=CHARACTER
+ NAMETYPE=NUMBER
+ NAMEEXPDATE=DATE
+ NAMEEFFDATE=DATE
+ SHLNID=CHARACTER
+ ACCT=CHARACTER
+ CARDLOCATOR=CHARACTER
+ EFTLOCATOR=CHARACTER
+ RecordAcct=CHARACTER
+ RecordNameLocator=CHARACTER
+ RecordSHLNID=CHARACTER
+ mailrecordfound=NUMBER
+ accountRecordFound=NUMBER
+
+[ *** Html Vars ***]
+ MbrVerificationType=NUMBER
+ NewStreet=NUMBER
+ NewExtraAddress=NUMBER
+ NewCity=NUMBER
+ NewState=NUMBER
+ NewZip=NUMBER
+
+ MailingStreet=NUMBER
+ MailingExtraAddress=NUMBER 
+ MailingCity=NUMBER
+ MailingState=NUMBER
+ MailingZip=NUMBER
+
+ NewNameFirst=NUMBER
+ NewNameLast=NUMBER
+ NewNameMiddle=NUMBER
+
+ NewIDType1=NUMBER
+ NewIDDesc1=NUMBER
+ NewIDNumber1=NUMBER
+ NewIDIssue1=NUMBER 
+ NewIDExp1=NUMBER
+ NewIDType2=NUMBER
+ NewIDDesc2=NUMBER
+ NewIDNumber2=NUMBER
+ NewIDIssue2=NUMBER 
+ NewIDExp2=NUMBER
+ NewHomePhone=NUMBER
+ NewWorkPhone=NUMBER
+ NewWorkPhExt=NUMBER
+ NewMobilePhone=NUMBER
+ NewEmail=NUMBER
+ NewAltEmail=NUMBER
+ NewPrefContact=NUMBER
+ 
+ MailOverride=NUMBER
+ UserChar1=NUMBER
+ UserChar2=NUMBER
+ UserChar3=NUMBER
+
+ Exceptions = NUMBER
+ Exceptions2 = NUMBER
+ SeasonOrTemp = NUMBER
+ EffectiveDate=NUMBER
+ ExpirationDate=NUMBER
+ IdentVerMethod=NUMBER
+ OtherIdentMethod=NUMBER
+ MailType=NUMBER
+ Signed=NUMBER
+ Signer1=NUMBER
+ Signer2=NUMBER
+ 
+ RequesterLongName=NUMBER
+ RequesterNameFirst=NUMBER
+ RequesterNameLast=NUMBER
+ RequesterNameMiddle=NUMBER 
+ RequesterStreet=NUMBER
+ RequesterExtraAddress=NUMBER
+ RequesterCity=NUMBER
+ RequesterState=NUMBER
+ RequesterZip=NUMBER
+ RequesterSSN=NUMBER
+ RequesterHomePhone=NUMBER
+ RequesterWorkPhone=NUMBER
+ RequesterWorkPhExt=NUMBER
+ RequesterMobilePhone=NUMBER
+ RequesterEmail=NUMBER 
+ RequesterAltEmail=NUMBER
+ RequesterPrefContact=NUMBER
+ RequesterIDType1=NUMBER
+ RequesterIDDesc1=NUMBER
+ RequesterIDNumber1=NUMBER
+ RequesterIDIssueDate1=NUMBER
+ RequesterIDExpDate1=NUMBER
+ RequesterIDVerDate1=NUMBER
+ RequesterIDType2=NUMBER
+ RequesterIDDesc2=NUMBER
+ RequesterIDNumber2=NUMBER
+ RequesterIDIssueDate2=NUMBER
+ RequesterIDExpDate2=NUMBER
+ RequesterIDVerDate2=NUMBER
+ RequesterBirthDate=DATE
+ RequesterNameType=NUMBER
+ RequesterNameFormat=CHARACTER
+ RequesterEffectiveDate=NUMBER
+ RequesterExpirationDate=NUMBER
+ MenuSel=NUMBER
+ record1=Number
+ record2=Number
+ record3=Number
+ record4=Number
+ record5=Number
+ record6=Number
+ record7=Number
+ record8=Number
+ record9=Number
+ record10=Number
+ RequesterNameExpDate=Number
+ NewNameExpDate=Number
+ RequesterNameAddDate=Number
+ NewNameAddDate=Number
+ CreateMail=Number
+
+
+[RequesterLoopVariables]
+ SSNARRAY=CHARACTER(9) ARRAY(99)
+ NAMELOCATORARRAY=NUMBER ARRAY(99)
+ NAMEARRAY=CHARACTER(40) ARRAY(99)
+ NAMETYPEARRAY=CHARACTER(1) ARRAY(99)
+ Ixxx=NUMBER
+ Jxxx=NUMBER
+ RequesterNameCategory=Character(1)
+ SSNDUPLICATE=NUMBER
+
+ VerifiedSSN=Number
+ ReviewedIDFile=Number
+ ReceivedDocumentation=Number
+
+ NonOwnerNameTypes=CHARACTER
+
+ SGOverride=Number Array(99)
+ SGOverrideMax=Number
+ accountlist= character array(99)
+ accountfound = number
+ MbrIdentityVerification=NUMBER
+
