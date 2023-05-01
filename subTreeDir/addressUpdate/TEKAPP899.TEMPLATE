@@ -1,0 +1,136 @@
+[*****************************************************************************
+ IMPORTANT NOTICE
+
+ By downloading, installing, or otherwise using any tek-apps, software, 
+ documentation, or other materials made available by TekChoice, LLC, through 
+ this repository, you acknowledge that you have read, understand, and agree to 
+ be bound by the End User License Agreement (the "EULA") included in these 
+ downloaded files as EULA.txt and made available at www.tekchoice.com/EULA.
+
+ SPECFILENAME : TEKAPP899.TEMPLATE
+ VERSION      : 001
+ COPYRIGHT    : TekChoice, LLC 2022 © 
+
+ Description  : Base template for TekApp
+
+ Programmed   : TekChoice LLC
+
+ Files        : 1. PowerOn files
+                  a. TEKAPP899.TEMPLATE
+                  b. TEKAPP899.TEMPLATE.CU
+                  c. TEKAPP899.TEMPLATE.DEF
+                  d. TEKAPP899.TEMPLATE.SET
+                  e. TEKAPP899.TEMPLATE.HTM
+                  f. TEKAPP899.TEMPLATE.PRO
+                  g. TEKAPP899.MAIN.DEF
+                  h. TEKAPP899.MAIN.SET
+                  i. TEKAPP899.MAIN.HTM
+                  j. TEKAPP899.MAIN.PRO
+
+                2. Non TekChoice include PowerOn files
+                  a. RD.GETDATA.DEF
+
+                3. Letter files read at TekSetGlobalVariables procedure
+                  a. TekMainCSS.899
+                  b. TekMainJS.899
+                  c. TekMainCU.899
+
+ Modified     : 04.22.22 Original Source
+********************************************************************************]
+
+SUBROUTINE DEMAND WINDOWS
+STATELESS
+TARGET=ACCOUNT
+
+DEFINE
+ #INCLUDE "RD.GETDATA.DEF"
+ #INCLUDE "TEKAPP899.MAIN.DEF"
+ #INCLUDE "TEKAPP899.TEMPLATE.DEF"
+END[DEFINE]
+
+SETUP
+ #INCLUDE "TEKAPP899.MAIN.SET"
+ #INCLUDE "TEKAPP899.TEMPLATE.SET"
+
+ WebPageTitle="TEMPLATE"
+ TekWebCalendar=FALSE
+
+ CurrentApp(CurrentAppName,1)="TEKAPP899.TEMPLATE"
+ CurrentApp(CurrentAppChannel,1)="01 Episys Client"
+ CurrentApp(CurrentAppStep,1)="Initial App Call"
+
+ StepName(1)="Step 1"
+ StepName(2)="Step 2"
+
+ CALL TekSetGlobalVariables
+ 
+ RGSTATUS      = "firstProcedure"
+ WHILE RGSTATUS <> "CANCEL"
+  DO
+    WHILELIMIT=10000000
+
+    IF RGSTATUS="firstProcedure" THEN
+     DO
+       CurrentStep=1
+       CurrentApp(CurrentAppStep,1)=RGSTATUS
+       CALL firstProcedure
+       IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+       IF WebSubmitBtn=NEXT        THEN RGSTATUS="getReview"
+     END
+
+    IF RGSTATUS="secondProcedure" THEN
+     DO
+       CurrentStep=2
+       CurrentApp(CurrentAppStep,1)=RGSTATUS
+       CALL secondProcedure
+       IF WebSubmitBtn=BACK        THEN RGSTATUS="firstProcedure"
+       IF WebSubmitBtn=CANCEL      THEN RGSTATUS="CANCEL"
+     END
+
+    IF RGSTATUS="Complete" THEN
+     DO
+       RGSTATUS="CANCEL"
+     END
+  END[WHILE]
+END[SETUP]
+
+
+PRINT TITLE=WebPageTitle
+ SUPPRESSNEWLINE
+END[PRINT]
+
+PROCEDURE firstProcedure
+
+ CALL TekProWebHeader
+ CALL TekProWebWSteps
+ [*** Start code below ***]
+ [*** End code above ***]
+ WebBtn(1)="CLOSE~2"
+ WebBtn(2)="NEXT~3"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ CALL TekProWebAcctOverview
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+
+END [getMember]
+
+
+PROCEDURE secondProcedure
+  CALL TekProWebHeader
+ CALL TekProWebWSteps
+ CALL TekProPrintConfirmation
+ WebBtn(1)="END~2"
+ CALL TekProWebDisplayBtn
+ CALL TekProWebBodyEnd
+ CALL TekProWebAcctOverview
+ CALL TekProWebHeaderEnd 
+ CALL TekProWebLoadFields
+END [getConfirmation]
+
+
+#INCLUDE "TEKAPP899.MAIN.PRO"
+#INCLUDE "TEKAPP899.MAIN.HTM"
+#INCLUDE "TEKAPP899.TEMPLATE.PRO"
+#INCLUDE "TEKAPP899.TEMPLATE.HTM"
+#INCLUDE "TEKAPP899.TEMPLATE.CU"
